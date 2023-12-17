@@ -155,6 +155,17 @@ int main(int argc, char** argv) {
       //  printf("Socket created successfully.\n");
     //}
 
+
+
+
+    // Placeholder code
+    // TODO Replace with own implementation
+    
+
+
+
+
+
     struct addrinfo hints;
     memset(&hints, 0, sizeof(struct addrinfo));
     struct addrinfo* results = NULL;
