@@ -10,12 +10,6 @@
 #define HOSTNAME sysprak.priv.lab.nm.ifi.lmu.de
 
 
-void printHilfe(){
-
-    printf("Please enter your 13-digit Game ID and Spielernummer.");
-
-}
-
 int main(int argc, char* argv[]){
 
     // Command Parameters as Game Id and Spielnummer
@@ -47,9 +41,7 @@ int main(int argc, char* argv[]){
             case 'p':
                 spielernummer = atoi(optarg);
                 break;
-            default:
-                printHilfe();
-                break;
+            
 
         }
     }
