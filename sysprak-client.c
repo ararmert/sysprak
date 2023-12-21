@@ -38,26 +38,33 @@ int main(int argc, char* argv[]){
                     }  
                 }                        
                 break;
-            case 'p':
-                spielernummer = atoi(optarg);
-                break;
-            
 
+            case 'p':
+                //Determines whether spielernummer is 1 or 2.
+                while(*(optarg+i) != '\0'){
+                    i++;
+                    count++;
+                }                 
+                if(count != 1){
+                    printf("Spielernummer should be 1 digit lang.\n");
+                }else{
+                   if((atoi(optarg) != 1) && (atoi(optarg) != 2)){
+                        printf("Spielernummer should be 1 or 2.\n");
+                   }else{
+                    spielernummer = atoi(optarg);
+                   }                  
+                }  
+                break;           
         }
     }
-    printf("game id is:");
-    for (int i = 0; i < 13; i++)
-    {
+    //check game ID and Spielernummer
+    printf("game-id is:");
+    for (int i = 0; i < 13; i++){
         printf("%c",game_id[i]);
     }
-    puts("");
+    puts("");   
+    printf("Spielernummer is:%d\n",spielernummer);
     
-    printf("Spielnummer is:%d\n",spielernummer);
-    printf("%lu",sizeof(game_id));
-
-
-
-
 
     return 0;
 }
