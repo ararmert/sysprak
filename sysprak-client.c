@@ -13,7 +13,7 @@
 int main(int argc, char* argv[]){
 
     // Command Parameters as Game Id and Spielnummer
-    int game_id[13]={};
+    char game_id[13]={};
     int spielernummer = 0;
 
     int ret;
@@ -33,7 +33,7 @@ int main(int argc, char* argv[]){
                 }else{
                     i = 0;
                     while(*(optarg+i) != '\0'){
-                        game_id[i] = *(optarg+i)-'0';
+                        game_id[i] = *(optarg+i);
                         i++;
                     }  
                 }                        
@@ -48,11 +48,12 @@ int main(int argc, char* argv[]){
     printf("game id is:");
     for (int i = 0; i < 13; i++)
     {
-        printf("%d",game_id[i]);
+        printf("%c",game_id[i]);
     }
     puts("");
     
     printf("Spielnummer is:%d\n",spielernummer);
+    printf("%lu",sizeof(game_id));
 
 
 
