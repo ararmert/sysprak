@@ -46,7 +46,7 @@ int main(int argc, char* argv[]){
                     count++;
                 }                 
                 if(count != 1){
-                    printf("Spielernummer should be 1 digit lang.\n");
+                    printf("Spielernummer should be 1 or 2.\n");
                 }else{
                    if((atoi(optarg) != 1) && (atoi(optarg) != 2)){
                         printf("Spielernummer should be 1 or 2.\n");
