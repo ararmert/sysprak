@@ -1,9 +1,18 @@
-#include <stdio.h>
+#include <stdio.h>      // for printf()
 #include <stdlib.h>
 #include <float.h>
 #include <unistd.h>
-#include <getopt.h>
+#include <getopt.h>     // for getopt()
 #include <string.h>
+#include <sys/types.h>  // for socket()
+#include <sys/socket.h> // for sockaddr
+#include <netinet/in.h> // for sockaddr_in
+#include <arpa/inet.h> 
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+
 
 #define GAMEKINDNAME Checkers
 #define PORTNUMBER 1357
@@ -66,7 +75,26 @@ int main(int argc, char* argv[]){
     printf("Spielernummer is:%d\n",spielernummer);
     
 
-    
+    printf("<< Dame Client start! >>\n\n");
 
+    // get hostname
+    char hostbuffer[256];
+    int hostname;
+
+    hostname = gethostname(hostbuffer,sizeof(hostbuffer));
+    printf("hostname is ： %s\n",hostbuffer);
+
+    //prepare socket
+    /*int socket_server = socket(PF_INET,SOCK_STREAM,0);
+    int socket_client;
+
+    struct sockaddr_in address_client;
+        address_client.sin_family = AF_INET;
+        address_client.sin_port = htons(1357);
+        address_client.sin_addr = "0.0.0.0";
+    
+    if(connect(socket_server,(struct sockaddr*)&address_client,sizeof(address_client)) == 0){
+        printf("Connection with %s succeed.\n",inet_ntoa(address_client.sin_addr));
+    }*/
     return 0;
 }
