@@ -18,7 +18,7 @@
 
 #define GAMEKINDNAME Checkers
 #define PORTNUMBER 1357
-#define HOSTNAME sysprak.priv.lab.nm.ifi.lmu.de
+#define HOSTNAME "sysprak.priv.lab.nm.ifi.lmu.de"
 
 
 int main(int argc, char* argv[]){
@@ -69,7 +69,7 @@ int main(int argc, char* argv[]){
         }
     }
     //check game ID and Spielernummer
-    printf("game-id is:");
+    printf("game id is:");
     for (int i = 0; i < 13; i++){
         printf("%c",game_id[i]);
     }
@@ -79,13 +79,8 @@ int main(int argc, char* argv[]){
 
     printf("<< Dame Client start! >>\n\n");
 
-    // get local hostname
-    char hostbuffer[256];
-    int hostname;
-    hostname = gethostname(hostbuffer,sizeof(hostbuffer));
-    printf("hostname is : %s\n",hostbuffer);
-
-    //get local ip address_client
+    
+    //get server ip address_server
     struct addrinfo hints;          
     struct addrinfo *result;        
     int retern;                        
@@ -95,7 +90,7 @@ int main(int argc, char* argv[]){
         hints.ai_socktype = SOCK_STREAM;         
         hints.ai_protocol = 0;                  
     
-    retern = getaddrinfo(hostbuffer, NULL,&hints,&result); 
+    retern = getaddrinfo(HOSTNAME, NULL,&hints,&result); 
     
     if (retern < 0) {
         fprintf(stderr, "%s\n", gai_strerror(retern));
@@ -103,29 +98,24 @@ int main(int argc, char* argv[]){
     }   
     struct sockaddr_in *addr;       
     addr = (struct sockaddr_in*)result->ai_addr;
-    printf("first ip address_client is : %s\n",inet_ntoa(addr->sin_addr));
+    printf("server ip is : %s\n",inet_ntoa(addr->sin_addr));
     
     
 
     //prepare socket
-    int socket_server = socket(PF_INET,SOCK_STREAM,0);   
-    int socket_client;                             
+    int socket_client = socket(PF_INET,SOCK_STREAM,0);   
+    int socket_server;                             
 
-    struct sockaddr_in address_client;                 
-    address_client.sin_family = AF_INET;
-    address_client.sin_port = htons(1357);
+    struct sockaddr_in address_server;                 
+    address_server.sin_family = AF_INET;
+    address_server.sin_port = htons(1357);
 
     // connect with server：
-    socket_server = socket(AF_INET, SOCK_STREAM, 0);         
-    
-    address_client.sin_addr = addr->sin_addr;
-    printf("socket's ip is: %s\n",inet_ntoa(address_client.sin_addr));
-
-   
-    if(connect(socket_server,(struct sockaddr*) &address_client, sizeof(address_client)) == 0) {
-      printf("Verbindung mit %s hergestellt.\n",inet_ntoa(address_client.sin_addr));
+    address_server.sin_addr = addr->sin_addr;   
+    if(connect(socket_client,(struct sockaddr*) &address_server, sizeof(address_server)) == 0) {
+      printf("Verbindung mit %s hergestellt.\n",inet_ntoa(address_server.sin_addr));
     }else{
-        printf("connect failed.\n");
+        printf("connection failed.\n");
     }
 
     freeaddrinfo(result);
