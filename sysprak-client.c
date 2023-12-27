@@ -83,9 +83,9 @@ int main(int argc, char* argv[]){
     char hostbuffer[256];
     int hostname;
     hostname = gethostname(hostbuffer,sizeof(hostbuffer));
-    printf("hostname is ： %s\n",hostbuffer);
+    printf("hostname is : %s\n",hostbuffer);
 
-    //get local ip address
+    //get local ip address_client
     struct addrinfo hints;          
     struct addrinfo *result;        
     int retern;                        
@@ -103,10 +103,31 @@ int main(int argc, char* argv[]){
     }   
     struct sockaddr_in *addr;       
     addr = (struct sockaddr_in*)result->ai_addr;
-    printf("第一个ip地址为：%s\n",inet_ntoa(addr->sin_addr));
+    printf("first ip address_client is : %s\n",inet_ntoa(addr->sin_addr));
     
-    freeaddrinfo(result);
     
 
+    //prepare socket
+    int socket_server = socket(PF_INET,SOCK_STREAM,0);   
+    int socket_client;                             
+
+    struct sockaddr_in address_client;                 
+    address_client.sin_family = AF_INET;
+    address_client.sin_port = htons(1357);
+
+    // connect with server：
+    socket_server = socket(AF_INET, SOCK_STREAM, 0);         
+    
+    address_client.sin_addr = addr->sin_addr;
+    printf("socket's ip is: %s\n",inet_ntoa(address_client.sin_addr));
+
+   
+    if(connect(socket_server,(struct sockaddr*) &address_client, sizeof(address_client)) == 0) {
+      printf("Verbindung mit %s hergestellt.\n",inet_ntoa(address_client.sin_addr));
+    }else{
+        printf("connect failed.\n");
+    }
+
+    freeaddrinfo(result);
     return 0;
 }
