@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <errno.h>
+#include <netdb.h>
 
 
 #define GAMEKINDNAME Checkers
@@ -25,11 +27,11 @@ int main(int argc, char* argv[]){
     char game_id[13]={};
     int spielernummer = 0;
 
-    int ret;
-    while((ret = getopt(argc,argv,"g:p:")) != -1){
+    int parameters;
+    while((parameters = getopt(argc,argv,"g:p:")) != -1){
         int i = 0;
         int count = 0;
-        switch(ret){
+        switch(parameters){
 
             case 'g':
                 //Determines whether game id is 13 digits long.
@@ -77,24 +79,34 @@ int main(int argc, char* argv[]){
 
     printf("<< Dame Client start! >>\n\n");
 
-    // get hostname
+    // get local hostname
     char hostbuffer[256];
     int hostname;
-
     hostname = gethostname(hostbuffer,sizeof(hostbuffer));
     printf("hostname is ： %s\n",hostbuffer);
 
-    //prepare socket
-    /*int socket_server = socket(PF_INET,SOCK_STREAM,0);
-    int socket_client;
-
-    struct sockaddr_in address_client;
-        address_client.sin_family = AF_INET;
-        address_client.sin_port = htons(1357);
-        address_client.sin_addr = "0.0.0.0";
+    //get local ip address
+    struct addrinfo hints;          
+    struct addrinfo *result;        
+    int retern;                        
+    memset(&hints, 0, sizeof(struct addrinfo)); 
+        hints.ai_flags = AI_PASSIVE;            
+        hints.ai_family = AF_INET;              
+        hints.ai_socktype = SOCK_STREAM;         
+        hints.ai_protocol = 0;                  
     
-    if(connect(socket_server,(struct sockaddr*)&address_client,sizeof(address_client)) == 0){
-        printf("Connection with %s succeed.\n",inet_ntoa(address_client.sin_addr));
-    }*/
+    retern = getaddrinfo(hostbuffer, NULL,&hints,&result); 
+    
+    if (retern < 0) {
+        fprintf(stderr, "%s\n", gai_strerror(retern));
+        exit(1);
+    }   
+    struct sockaddr_in *addr;       
+    addr = (struct sockaddr_in*)result->ai_addr;
+    printf("第一个ip地址为：%s\n",inet_ntoa(addr->sin_addr));
+    
+    freeaddrinfo(result);
+    
+
     return 0;
 }
