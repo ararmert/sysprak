@@ -19,12 +19,6 @@
 #define BUFFER 256
 
 
-void handler(int s) {
-    printf("Caught SIGPIPE\n");
-}
-
-
-// Prologphase der Kommunikation
 void performConnection(int socket_fd) {
 
     // Receive the first server message
@@ -49,7 +43,7 @@ void performConnection(int socket_fd) {
     }
 
     // Send the client version to the server
-    char clientVersion[] = "VERSION 2.3\n"; 
+    char clientVersion[] = "VERSION 3.3\n"; 
     ssize_t sent_byte = send(socket_fd, clientVersion, strlen(clientVersion), 0);
 
     if(sent_byte == -1) {
@@ -122,102 +116,9 @@ void performConnection(int socket_fd) {
     printf("%s\n", playerbuffer);
 
 
-
-
-
-
-       
- 
-
     // Close the socket when done
     close(socket_fd);
 
 }
 
 
-// Main function
-int main(int argc, char** argv) {
-    signal(SIGPIPE, handler);
-
-
-    int socket_fd;
-    char* charbuffer = (char*)malloc(BUFFER * sizeof(char));
-    ssize_t size;
-
-    // Create a TCP socket
-    //int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
-
-    //if (socket_fd == -1) {
-      //  perror("Failed to create socket");
-       // exit(EXIT_FAILURE);
-    //} else if (socket_fd == 3) {
-
-      //  printf("Socket created successfully.\n");
-    //}
-
-
-
-
-    // Placeholder code
-    // TODO Replace with own implementation
-    
-
-
-
-
-
-    struct addrinfo hints;
-    memset(&hints, 0, sizeof(struct addrinfo));
-    struct addrinfo* results = NULL;
-    struct addrinfo* record = NULL;
-
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-
-    if (getaddrinfo(HOSTNAME, PORTNUMBER, &hints, &results) != 0) {
-        perror("Failed to translate client socket.");
-        return -1;
-    }
-
-    for (record = results; record != NULL; record = record->ai_next) {
-        socket_fd = socket(record->ai_family, record->ai_socktype, record->ai_protocol);
-         if (socket_fd == -1) {
-        perror("Error creating socket");
-        continue;  
-    }
-
-        if (connect(socket_fd, record->ai_addr, record->ai_addrlen) != -1) {
-
-            printf("Connected to the server: \n");
-            break;
-
-        } else {
-            perror("Connection failed. \n");
-            close(socket_fd);
-            exit(EXIT_FAILURE);
-        }
-        
-        
-    
-    }
-
-   
-
-
-
-
-    freeaddrinfo(results);
-    
-    performConnection(socket_fd);
-
-    size = recv(socket_fd, charbuffer, BUFFER - 1, 0);
-    if (size > 0) charbuffer[size] = '\0';
-    printf("Server message: %s", charbuffer);
-
-    
-
-    close(socket_fd);
-    free(charbuffer);
-
-    return 0;
-}

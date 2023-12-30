@@ -8,20 +8,22 @@
 #include <sys/socket.h> 
 #include <netinet/in.h> 
 #include <arpa/inet.h> 
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
 #include <stdbool.h>
 #include <errno.h>
+#include <signal.h>
 #include <netdb.h>
+#include <fcntl.h>
+#include "handler.h"
+#include "performConnection.h"
 
-
-#define GAMEKINDNAME Checkers
-#define PORTNUMBER 1357
+#define GAMEKINDNAME "Checkers"
+#define PORTNUMBER "1357"
 #define HOSTNAME "sysprak.priv.lab.nm.ifi.lmu.de"
+#define BUFFER 256
 
 
 int main(int argc, char* argv[]){
+    signal(SIGPIPE, handler);
 
     // init Game-id and Spielernummer
     char game_id[13]={};
@@ -82,39 +84,74 @@ int main(int argc, char* argv[]){
     // connect with Gameserver
 
     //get server ip address_server
+
     struct addrinfo hints;          
-    struct addrinfo *result;        
-    int return_server_ip;                        
+    struct addrinfo* results;        
+                           
     memset(&hints, 0, sizeof(struct addrinfo)); 
         hints.ai_flags = AI_PASSIVE;            
         hints.ai_family = AF_INET;              
         hints.ai_socktype = SOCK_STREAM;         
-        hints.ai_protocol = 0;                  
-    return_server_ip = getaddrinfo(HOSTNAME, NULL,&hints,&result); 
-    if (return_server_ip < 0) {
+        hints.ai_protocol = 0;         
+    int return_server_ip;          
+    return_server_ip = getaddrinfo(HOSTNAME, PORTNUMBER,&hints,&results); 
+    if (return_server_ip != 0) {
         fprintf(stderr, "%s\n", gai_strerror(return_server_ip));
-        exit(1);
+        return -1;
     }   
+    
     struct sockaddr_in *addr;       
-    addr = (struct sockaddr_in*)result->ai_addr;
+    addr = (struct sockaddr_in*)results->ai_addr;
     printf("server ip is : %s\n",inet_ntoa(addr->sin_addr));
     
-    //prepare socket
-    int socket_client = socket(PF_INET,SOCK_STREAM,0);   
-    int socket_server;                             
-
     struct sockaddr_in address_server;                 
     address_server.sin_family = AF_INET;
-    address_server.sin_port = htons(PORTNUMBER);
+    address_server.sin_port = htons(atoi(PORTNUMBER));
+    address_server.sin_addr = addr->sin_addr; 
+    //prepare socket
+    int socket_client = socket(PF_INET,SOCK_STREAM,0);  
+     if  (socket_client == -1){
+        perror("Error by creating socket");
+    }   
+    
+    // It should not be necessary to use a for loop.
+    //struct addrinfo* record = NULL;
+    /* for (record = results; record != NULL; record = record->ai_next) {
+        socket_client = socket(record->ai_family, record->ai_socktype, record->ai_protocol);
+         
+        if (connect(socket_client, record->ai_addr, record->ai_addrlen) != -1) {
+
+            printf(" Successfully connected to the server: %s \n"，,inet_ntoa(address_server.sin_addr));
+         //break;
+        } else {
+            perror("Connection failed. \n");
+            close(socket_client);
+            exit(EXIT_FAILURE);
+        }    
+    } */
 
     // connect with server：
-    address_server.sin_addr = addr->sin_addr;   
     if(connect(socket_client,(struct sockaddr*) &address_server, sizeof(address_server)) == 0) {
-      printf("Verbindung mit %s hergestellt.\n",inet_ntoa(address_server.sin_addr));
+      printf("Successfully connected to the server: %s \n",inet_ntoa(address_server.sin_addr));
     }else{
-        printf("connection failed.\n");
+        perror("Connection failed. \n");
+            close(socket_client);
+            exit(EXIT_FAILURE);
     }
-    freeaddrinfo(result);
+
+    freeaddrinfo(results);
+
+    performConnection(socket_client);
+
+    char* charbuffer = (char*)malloc(BUFFER * sizeof(char));
+    ssize_t size;
+    size = recv(socket_client, charbuffer, BUFFER - 1, 0);
+    if (size > 0) charbuffer[size] = '\0';
+    printf("Server message: %s\n", charbuffer);
+
+
+    close(socket_client);
+    free(charbuffer);
 
     return 0;
 }
