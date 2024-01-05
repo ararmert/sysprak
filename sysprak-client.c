@@ -13,6 +13,7 @@
 #include <signal.h>
 #include <netdb.h>
 #include <fcntl.h>
+#include <sys/wait.h>
 #include "handler.h"
 #include "performConnection.h"
 #include "config.h"
@@ -104,7 +105,27 @@ int main(int argc, char* argv[]){
     
 
     printf("<< Dame Client start! >>\n\n");
+    
+    pid_t pid  = fork();
+    if (pid< 0) {
+        perror ("Fehler bei fork().");
+        exit(EXIT_FAILURE);
+    } 
+    // parentprocess
+    if (pid > 0) {
+        printf("Parent process beginn.\n");
+        //wait for childprocess
+        pid = waitpid(pid, NULL, 0);
+        printf("parent process end.\n");
+        if (pid < 0) {
+        perror ("Fehler beim Warten auf Kindprozess.");
+        exit(EXIT_FAILURE);
+        }
+    }
+    /* Child process */
+    else{
 
+    printf("Child process beginn.\n");
     // connect with Gameserver
 
     //get server ip address_server
@@ -176,6 +197,7 @@ int main(int argc, char* argv[]){
 
     close(socket_client);
     free(charbuffer);
-
+    printf("Child process end.\n");
+    }
     return 0;
 }
