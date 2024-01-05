@@ -15,23 +15,33 @@
 #include <fcntl.h>
 #include "handler.h"
 #include "performConnection.h"
+#include "config.h"
 
 #define GAMEKINDNAME "Checkers"
 #define PORTNUMBER "1357"
 #define HOSTNAME "sysprak.priv.lab.nm.ifi.lmu.de"
 #define BUFFER 256
 
+struct config{
+    char Hostname[256];
+    int PortNumer;
+    char GameKindName[256];
+};
 
 int main(int argc, char* argv[]){
     signal(SIGPIPE, handler);
+    
 
     // init Game-id and Spielernummer
     char game_id[13]={};
     int spielernummer = 0;
+   // char parameterName[256];
+    struct config config_server = {"un know",0,"un know"};
+    char fileName[256]="client.conf\0";
 
-    //analyse Command Parameters as Game-Id and Spielnummer
+    //analyse Command Parameters as Game-Id, Spielnummer and configuration
     int parameters;
-    while((parameters = getopt(argc,argv,"g:p:")) != -1){
+    while((parameters = getopt(argc,argv,"g:p:c:")) != -1){
         int i = 0;
         int count = 0;
         switch(parameters){
@@ -66,17 +76,31 @@ int main(int argc, char* argv[]){
                     spielernummer = atoi(optarg);
                    }                  
                 }  
-                break;           
+                break;    
+            case 'c':   //analysis configuration 
+                strcpy(fileName,optarg);
+                break;       
         }
     }
 
-    //check game ID and Spielernummer
+    //check game ID,Spielernummer and configuration
     printf("game id is:");
     for (int i = 0; i < 13; i++){
         printf("%c",game_id[i]);
     }
     puts("");   
     printf("Spielernummer is:%d\n",spielernummer);
+    
+
+    printf("before, Hostname is: %s\n",config_server.Hostname);
+    printf("before, Posrtnumber is: %d\n",config_server.PortNumer); 
+    printf("before, GameKindName is: %s\n\n",config_server.GameKindName);
+
+    config(fileName,&config_server);
+
+    printf("after, Hostname is: %s\n",config_server.Hostname);
+    printf("after, Posrtnumber is: %d\n",config_server.PortNumer); 
+    printf("after, GameKindNameis :%s\n",config_server.GameKindName); 
     
 
     printf("<< Dame Client start! >>\n\n");
