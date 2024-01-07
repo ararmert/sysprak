@@ -14,6 +14,11 @@
 #include <netdb.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/msg.h>
 #include "handler.h"
 #include "performConnection.h"
 #include "config.h"
@@ -22,11 +27,21 @@
 #define PORTNUMBER "1357"
 #define HOSTNAME "sysprak.priv.lab.nm.ifi.lmu.de"
 #define BUFFER 256
+#define SIZE 1024
 
 struct config{
     char Hostname[256];
     int PortNumer;
     char GameKindName[256];
+};
+
+struct shmdata{
+    char GameKindName[256];
+    int Spielernummer;
+    int Player_number;
+    pid_t pid_parent;
+    pid_t pid_child;
+
 };
 
 int main(int argc, char* argv[]){
@@ -105,6 +120,20 @@ int main(int argc, char* argv[]){
     
 
     printf("<< Dame Client start! >>\n\n");
+
+    /* add share memory */
+    int shmid ;
+    char *shmaddr ;
+    struct shmid_ds shm_buf;
+    int flag = 0 ;
+
+    shmid = shmget(IPC_PRIVATE, SIZE, IPC_CREAT|0600 ) ;
+    if ( shmid < 0 ){
+    perror("get shm  ipc_id error") ;
+    return -1 ;
+    }
+
+
     
     pid_t pid  = fork();
     if (pid< 0) {
@@ -114,6 +143,27 @@ int main(int argc, char* argv[]){
     // parentprocess
     if (pid > 0) {
         printf("Parent process beginn.\n");
+
+        flag = shmctl( shmid, IPC_STAT, &shm_buf) ;
+    if ( flag == -1 ){
+        perror("shmctl shm error") ;
+        return -1 ;
+    }
+    printf("shm_segsz =%zu bytes\n", shm_buf.shm_segsz ) ;
+    printf("parent pid=%d, shm_cpid = %d \n", getpid(), shm_buf.shm_cpid ) ;
+    printf("chlid pid=%d, shm_lpid = %d \n",pid , shm_buf.shm_lpid ) ;
+
+    shmaddr = (char *) shmat(shmid, NULL, 0 ) ;
+
+
+    printf("%s", shmaddr) ;
+
+    shmdt( shmaddr ) ;
+
+    shmctl(shmid, IPC_RMID, NULL) ;
+
+
+
         //wait for childprocess
         pid = waitpid(pid, NULL, 0);
         printf("parent process end.\n");
@@ -126,6 +176,16 @@ int main(int argc, char* argv[]){
     else{
 
     printf("Child process beginn.\n");
+    
+    /* attach shm to an address */
+    shmaddr = (char *)shmat( shmid, NULL, 0 ) ;
+
+    /* some operation to shm */
+    strcpy( shmaddr, "Hi, in child process shm attached sucessful.\n") ;
+
+    /* detach shm */
+    shmdt( shmaddr ) ;
+
     // connect with Gameserver
 
     //get server ip address_server
