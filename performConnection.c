@@ -187,7 +187,7 @@ int main(int argc, char **argv)
     //}
 
     // Placeholder code up until the creation of the Elternprozess
-    // TODO Replace with own implementation
+    // TODO: Replace with own implementation
 
     struct addrinfo hints;
     memset(&hints, 0, sizeof(struct addrinfo));
