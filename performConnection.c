@@ -236,9 +236,10 @@ int main(int argc, char **argv)
         perror("Error forking process.");
         exit(EXIT_FAILURE);
     }
+
+    // Kindprozess (Connector)
     else if (pid == 0)
     {
-        // Kindprozess (Connector)
 
         // Shared Memory Bereich
         int shm_id = shmget(IPC_PRIVATE, sizeof(struct SharedData), IPC_CREAT | 0666);
