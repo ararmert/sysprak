@@ -1,5 +1,8 @@
 #include<sys/types.h>
+#include<sys/wait.h>
 #include<sys/socket.h>
+#include<sys/ipc.h>
+#include<sys/shm.h>
 #include<netinet/in.h>
 #include<arpa/inet.h>
 #include<unistd.h>
@@ -18,10 +21,35 @@
 #define HOSTNAME "sysprak.priv.lab.nm.ifi.lmu.de"                   
 #define BUFFER 256
 
+struct Player {
+    int playerNum;
+    int playerName;
+    bool isReady;
+};
+
+struct SharedData {
+    struct Player player;
+    char gameName[256];
+    
+    int totalPlayers;
+    pid_t thinkerPID;
+    pid_t connectorPID;
+};
+
+
 
 void handler(int s) {
     printf("Caught SIGPIPE\n");
 }
+
+void thinker() {
+    printf("Thinker process has started.\n");
+
+
+    int status;
+    waitpid(-1, &status, 0);
+}
+
 
 
 // Prologphase der Kommunikation
@@ -49,7 +77,7 @@ void performConnection(int socket_fd) {
     }
 
     // Send the client version to the server
-    char clientVersion[] = "VERSION 2.3\n"; 
+    char clientVersion[] = "VERSION 3.1\n"; 
     ssize_t sent_byte = send(socket_fd, clientVersion, strlen(clientVersion), 0);
 
     if(sent_byte == -1) {
@@ -76,6 +104,7 @@ void performConnection(int socket_fd) {
     if (size_receivedd > 0) charbufferr[size_receivedd] = '\0';
     printf("%s\n", charbufferr);
 
+
     // Send the Game-ID to the server
     char gameID[] = "ID 0sk8wc9exo1g1\n";
     ssize_t sent_gameid = send(socket_fd, gameID, strlen(gameID), 0);
@@ -97,6 +126,8 @@ void performConnection(int socket_fd) {
     ssize_t size_receiveddd = recv(socket_fd, charbufferrr, BUFFER - 1, 0);
     if (size_receiveddd > 0) charbufferrr[size_receiveddd] = '\0';
     printf("%s\n", charbufferrr);
+    
+    
 
     
     // Send the PLAYER command to the server
@@ -134,6 +165,15 @@ void performConnection(int socket_fd) {
 
 }
 
+void connector(int socket_fd) {
+    printf("Connector process has started.\n");
+
+    performConnection(socket_fd);
+
+    exit(EXIT_SUCCESS);
+}
+
+
 
 // Main function
 int main(int argc, char** argv) {
@@ -158,7 +198,7 @@ int main(int argc, char** argv) {
 
 
 
-    // Placeholder code
+    // Placeholder code up until the creation of the Elternprozess
     // TODO Replace with own implementation
     
 
@@ -196,20 +236,76 @@ int main(int argc, char** argv) {
             close(socket_fd);
             exit(EXIT_FAILURE);
         }
+}
+
+   freeaddrinfo(results);
+
+    // Elternprozess
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        perror("Error forking process.");
+        exit(EXIT_FAILURE);
+
+    } else if (pid == 0) {
+        // Kindprozess (Connector)
+
+        // Shared Memory Bereich
+        int shm_id = shmget(IPC_PRIVATE, sizeof(struct SharedData), IPC_CREAT | 0666);
+        if (shm_id < 0) {
+            perror("Error creating shared memory segment.");
+            exit(EXIT_FAILURE);
+        } else if (shm_id > 0) {
+        // Shared Memory Attach
+
+        struct SharedData* sharedData = (struct SharedData*)shmat(shm_id, NULL, 0);
+
         
+        if ((intptr_t)sharedData == -1) {
+            perror("Error attaching shared memory");
+            exit(EXIT_FAILURE);
+        }
+
+        //Initialize shared data
+        strcpy(sharedData->gameName, GAMEKINDNAME);
+        sharedData->player.playerNum = 1;
+        sharedData->totalPlayers = 2;
+        sharedData->thinkerPID = getpid();
+        sharedData->connectorPID = 0;
+
+        if(shmdt(sharedData) == -1) {
+            perror("Error detaching shared memory");
+            exit(EXIT_FAILURE);
+        } exit(EXIT_SUCCESS);
+
+        if(shmctl(shm_id, IPC_RMID, NULL) == -1) {
+            perror("Error removing shared memory");
+            exit(EXIT_FAILURE);
+        } exit(EXIT_SUCCESS);
+
         
-    
+
+
+
     }
 
-   
+}
 
 
 
 
-    freeaddrinfo(results);
+
+        connector(socket_fd);
+        exit(EXIT_SUCCESS);
     
-    performConnection(socket_fd);
-
+        // Elternprozess
+        thinker();
+        // Warte auf die Terminierung des Kindprozesses
+        int status;
+        waitpid(pid, &status, 0);
+    
+    
+    
     size = recv(socket_fd, charbuffer, BUFFER - 1, 0);
     if (size > 0) charbuffer[size] = '\0';
     printf("Server message: %s", charbuffer);
@@ -218,6 +314,12 @@ int main(int argc, char** argv) {
 
     close(socket_fd);
     free(charbuffer);
+    
 
     return 0;
+
+
 }
+
+
+
