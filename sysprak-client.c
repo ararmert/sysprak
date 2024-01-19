@@ -22,9 +22,7 @@
 #include "config.h"
 
 #define BUFFER 256
-#define GAMEKINDNAME "Checkers"
-#define PORTNUMBER "1357"
-#define HOSTNAME "sysprak.priv.lab.nm.ifi.lmu.de"
+
 
 struct config{
     char Hostname[256];
@@ -112,12 +110,18 @@ int main(int argc, char* argv[]){
     puts("");   
     printf("Spielernummer is:%d\n", playerKommando);
     
-
     printf("before, Hostname is: %s\n",config_server.Hostname);
     printf("before, Posrtnumber is: %d\n",config_server.PortNumer); 
     printf("before, GameKindName is: %s\n\n",config_server.GameKindName);
 
-    config(fileName,&config_server);
+    config(fileName,&config_server);    
+    char* p_hostname = config_server.Hostname; 
+    char portnumber_string[5];
+    sprintf(portnumber_string,"%d",config_server.PortNumer);
+    char* p_portnumber = portnumber_string;
+    char* p_gamekindname = config_server.GameKindName;
+    
+
 
 
     printf("after, Hostname is: %s\n",config_server.Hostname);
@@ -141,7 +145,7 @@ int main(int argc, char* argv[]){
         }
 
         // Initialize shared data
-        strcpy(sharedData->gameName, GAMEKINDNAME);
+        strcpy(sharedData->gameName, p_gamekindname);
         sharedData->player.playerNum = 1;
         sharedData->totalPlayers = 2;
         sharedData->thinkerPID = getpid();
@@ -182,7 +186,7 @@ int main(int argc, char* argv[]){
         hints.ai_socktype = SOCK_STREAM;         
         hints.ai_protocol = 0;         
         int return_server_ip;          
-        return_server_ip = getaddrinfo(HOSTNAME, PORTNUMBER,&hints,&results); 
+        return_server_ip = getaddrinfo(p_hostname,p_portnumber,&hints,&results); 
         if (return_server_ip != 0) {
             fprintf(stderr, "%s\n", gai_strerror(return_server_ip));
             return -1;
@@ -194,7 +198,7 @@ int main(int argc, char* argv[]){
     
         struct sockaddr_in address_server;                 
         address_server.sin_family = AF_INET;
-        address_server.sin_port = htons(atoi(PORTNUMBER));
+        address_server.sin_port = htons(1357);
         address_server.sin_addr = addr->sin_addr; 
         //prepare socket
         int socket_fd = socket(AF_INET,SOCK_STREAM,0);  

@@ -59,21 +59,3 @@ int config(char* fileName,struct config* con){
     return 0;
 }
 
-// test config function
-/* int main(){
-    struct config test;
-        strcpy(test.Hostname, "un know");
-        test.PortNumer = 0000;
-        strcpy(test.GameKindName,"un know");
-
-    printf("读取前，Hostname为：%s\n",test.Hostname);
-    printf("读取前，Posrtnumber为：%d\n",test.PortNumer); 
-    printf("读取前，GameKindName为：%s\n\n",test.GameKindName);
-    config("client.conf",&test);
-    printf("读取后，Hostname为：%s\n",test.Hostname);
-    printf("读取后，Posrtnumber为：%d\n",test.PortNumer); 
-    printf("读取后，GameKindName为：%s\n",test.GameKindName); 
-
-    return 0;
-
-} */
