@@ -12,14 +12,11 @@
 #include<netdb.h>
 #include<fcntl.h>
 
-
-#define GAMEKINDNAME "Checkers"
-#define PORTNUMBER "1357"
-#define HOSTNAME "sysprak.priv.lab.nm.ifi.lmu.de"                   
+               
 #define BUFFER 256
 
 
-void performConnection(int socket_fd) {
+void performConnection(int socket_fd,char gameID[13]) {
 
     // Receive the first server message
     char* charbuffer = (char*)malloc(BUFFER * sizeof(char));
@@ -62,8 +59,6 @@ void performConnection(int socket_fd) {
     // Add a delay
     usleep(500000);
 
-
-
     // Receive server response
     char* charbufferr = (char*)malloc(BUFFER * sizeof(char));
     ssize_t size_receivedd = recv(socket_fd, charbufferr, BUFFER - 1, 0);
@@ -71,7 +66,7 @@ void performConnection(int socket_fd) {
     printf("%s\n", charbufferr);
 
     // Send the Game-ID to the server
-    char gameID[] = "ID 0sk8wc9exo1g1\n";
+    
     ssize_t sent_gameid = send(socket_fd, gameID, strlen(gameID), 0);
 
 
@@ -120,5 +115,4 @@ void performConnection(int socket_fd) {
     close(socket_fd);
 
 }
-
 
