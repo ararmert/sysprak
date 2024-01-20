@@ -66,8 +66,8 @@ void performConnection(int socket_fd,char gameID[13]) {
     printf("%s\n", charbufferr);
 
     // Send the Game-ID to the server
-    
-    ssize_t sent_gameid = send(socket_fd, gameID, strlen(gameID), 0);
+    char gameIDs[] = "ID 0sk8wc9exo1g1\n";
+    ssize_t sent_gameid = send(socket_fd, gameIDs, strlen(gameIDs), 0);
 
 
     if(sent_gameid == -1) {

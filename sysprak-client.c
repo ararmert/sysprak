@@ -50,15 +50,15 @@ int main(int argc, char* argv[]){
     
 
     // init Game-id and Spielernummer
-    char gameID[14]={};
-    int playerKommando = 0;
+    char gameID[13]="0sk8wc9exo1g1";
+    int playerKommando = 1;
    // char parameterName[256];
     struct config config_server = {"un know",0,"un know"};
     char fileName[256]="client.conf\0";
 
     //analyse Command Parameters as Game-Id, Spielnummer and configuration
     int parameters;
-    while((parameters = getopt(argc,argv,"g:p:c::")) != -1){
+    while((parameters = getopt(argc,argv,"g:p:c:")) != -1){
         int i = 0;
         int count = 0;
         switch(parameters){
@@ -101,7 +101,7 @@ int main(int argc, char* argv[]){
     }
 
     //check game ID,Spielernummer and configuration
-    strcpy(gameID,"0sk8wc9exo1g1");
+    
     
     printf("game id is:");
     for (int i = 0; i < 13; i++){
@@ -151,7 +151,7 @@ int main(int argc, char* argv[]){
         sharedData->thinkerPID = getpid();
         sharedData->connectorPID = 0;
     }
-          
+    
     pid_t pid  = fork();
 
 
@@ -169,6 +169,18 @@ int main(int argc, char* argv[]){
         perror ("Fehler beim Warten auf Kindprozess.");
         exit(EXIT_FAILURE);
         }
+
+        /* if (shmdt(sharedData) == -1){
+            perror("Error detaching shared memory");
+            exit(EXIT_FAILURE);
+    } */
+        
+    if (shmctl(shm_id, IPC_RMID, NULL) == -1){
+        perror("Error removing shared memory");
+        exit(EXIT_FAILURE);
+    }else{
+        printf("SHM delete \n");
+    }
     }
 
     /* Child process-------> Connector */
@@ -201,7 +213,7 @@ int main(int argc, char* argv[]){
         address_server.sin_port = htons(1357);
         address_server.sin_addr = addr->sin_addr; 
         //prepare socket
-        int socket_fd = socket(AF_INET,SOCK_STREAM,0);  
+        int socket_fd = socket(PF_INET,SOCK_STREAM,0);  
         if  (socket_fd == -1){
             perror("Error by creating socket");
         }   
@@ -218,7 +230,7 @@ int main(int argc, char* argv[]){
 
         freeaddrinfo(results);
 
-        performConnection(socket_fd);
+        performConnection(socket_fd,gameID);
 
         char* charbuffer = (char*)malloc(BUFFER * sizeof(char));
         ssize_t size;
@@ -228,21 +240,10 @@ int main(int argc, char* argv[]){
 
         close(socket_fd);
         free(charbuffer);
-
-        /* if (shmdt(sharedData) == -1){
-            perror("Error detaching shared memory");
-            exit(EXIT_FAILURE);
-        } */
         
-        if (shmctl(shm_id, IPC_RMID, NULL) == -1){
-            perror("Error removing shared memory");
-            exit(EXIT_FAILURE);
-        }
-
     printf("Child process end.\n");
     }
-    
-    
+     
 
     return 0;
 }
