@@ -16,9 +16,9 @@
 #define BUFFER 256
 
 
-void performConnection(int socket_fd,char gameID[13]) {
+void performConnection(int socket_fd,char gameID[13],char playersend[9]) {
 
-    // Receive the first server message
+    // Receive the first server message '+MNM'
     char* charbuffer = (char*)malloc(BUFFER * sizeof(char));
     ssize_t size_received = recv(socket_fd, charbuffer, BUFFER - 1, 0);
     if (size_received > 0) charbuffer[size_received] = '\0';
@@ -32,7 +32,6 @@ void performConnection(int socket_fd,char gameID[13]) {
         close(socket_fd);
         exit(EXIT_FAILURE);
     }
-
     if (fcntl(socket_fd, F_SETFL, flags | O_NONBLOCK) == -1) {
         perror("Error setting socket to non-blocking mode");
         close(socket_fd);
@@ -47,29 +46,25 @@ void performConnection(int socket_fd,char gameID[13]) {
         perror("Error sending client version.\n");
         close(socket_fd);
         exit(EXIT_FAILURE);
-
-        // Receive server response
-
     } else { 
         printf("%zd bytes sent(Client Version).\n", sent_byte);
-        
-
     }  
 
     // Add a delay
     usleep(500000);
 
-    // Receive server response
+    // Receive server response about Client Version
     char* charbufferr = (char*)malloc(BUFFER * sizeof(char));
     ssize_t size_receivedd = recv(socket_fd, charbufferr, BUFFER - 1, 0);
     if (size_receivedd > 0) charbufferr[size_receivedd] = '\0';
     printf("%s\n", charbufferr);
 
     // Send the Game-ID to the server
-    char gameIDs[] = "ID 0sk8wc9exo1g1\n";
+    char gameIDs[18] = "ID ";
+    strcat(gameIDs, gameID);
+    strcat(gameIDs, "\n");
+    printf("game id is %s\n",gameIDs);
     ssize_t sent_gameid = send(socket_fd, gameIDs, strlen(gameIDs), 0);
-
-
     if(sent_gameid == -1) {
         perror("Error sending Game-ID.\n");
         close(socket_fd);
@@ -77,20 +72,19 @@ void performConnection(int socket_fd,char gameID[13]) {
     } else { 
         printf("%zd bytes sent(Game-ID).\n", sent_byte);
     }
-
      // Add a delay
     usleep(500000);
 
-    // Receive server response
+    // Receive server response about Gameekind-Name
     char* charbufferrr = (char*)malloc(BUFFER * sizeof(char));
     ssize_t size_receiveddd = recv(socket_fd, charbufferrr, BUFFER - 1, 0);
     if (size_receiveddd > 0) charbufferrr[size_receiveddd] = '\0';
     printf("%s\n", charbufferrr);
 
+    //To DO： if gamekindname is not checkers, should quit.
     
     // Send the PLAYER command to the server
-    char playerKommando[] = "PLAYER \n";
-    ssize_t sent_bytes = send(socket_fd, playerKommando, strlen(playerKommando), 0);
+    ssize_t sent_bytes = send(socket_fd, playersend, strlen(playersend), 0);
 
     if (sent_bytes == -1) {
         perror("Playerkommando konnte nicht gesendet werden.");
@@ -104,15 +98,16 @@ void performConnection(int socket_fd,char gameID[13]) {
     usleep(500000);
 
 
-     // Receive server response
-    char* playerbuffer = (char*)malloc(BUFFER * sizeof(char));
-    ssize_t player_received = recv(socket_fd, playerbuffer, BUFFER - 1, 0);
-    if (player_received > 0) playerbuffer[player_received] = '\0';
-    printf("%s\n", playerbuffer);
+     // Receive server response about 'Player'
+     
+    char* playerbuffer = (char*)malloc(BUFFER * sizeof(char)); //开辟一个地址空间
+    ssize_t player_received = recv(socket_fd, playerbuffer, BUFFER - 1, 0);//收到消息存放在playerbuffer中
+    if (player_received > 0) playerbuffer[player_received] = '\0'; //若消息长度不为0则在消息最后一个位置加入一个\0
+    printf("%s\n", playerbuffer);//打印收到的一条消息。
 
 
     // Close the socket when done
-    close(socket_fd);
-
+    //close(socket_fd);
+    // 是否不应当关闭socket，且应当free malloc的内存空间？
 }
 

@@ -1,1 +1,1 @@
-void performConnection(int socket_fd,char gameID[13]);
+void performConnection(int socket_fd,char gameID[13],char playersend[9]);

@@ -46,12 +46,12 @@ struct SharedData{
 
 
 int main(int argc, char* argv[]){
+
     signal(SIGPIPE, handler);
     
-
     // init Game-id and Spielernummer
-    char gameID[13]="0sk8wc9exo1g1";
-    int playerKommando = 1;
+    char gameID[13]="";
+    int spielernummer;
    // char parameterName[256];
     struct config config_server = {"un know",0,"un know"};
     char fileName[256]="client.conf\0";
@@ -70,6 +70,7 @@ int main(int argc, char* argv[]){
                 }                 
                 if(count != 13){
                     printf("Game ID should be 13 digits lang.\n");
+                    return -1;
                 }else{
                     i = 0;
                     while(*(optarg+i) != '\0'){
@@ -79,18 +80,20 @@ int main(int argc, char* argv[]){
                 }                        
                 break;
             case 'p':
-                //Determines whether spielernummer is 1 or 2.
+                //Determines whether spielernummer is 0 or 1.
                 while(*(optarg+i) != '\0'){
                     i++;
                     count++;
                 }                 
                 if(count != 1){
-                    printf("Spielernummer should be 1 or 2.\n");
+                    printf("Spielernummer should 1 digit long.\n");
+                    return -1;
                 }else{
-                   if((atoi(optarg) != 1) && (atoi(optarg) != 2)){
-                        printf("Spielernummer should be 1 or 2.\n");
+                   if((atoi(optarg) != 1) && (atoi(optarg) != 0)){
+                        printf("Spielernummer should be 0 or 1.\n");
+                        return -1;
                    }else{
-                    playerKommando = atoi(optarg);
+                    spielernummer = atoi(optarg);
                    }                  
                 }  
                 break;    
@@ -101,29 +104,37 @@ int main(int argc, char* argv[]){
     }
 
     //check game ID,Spielernummer and configuration
-    
-    
     printf("game id is:");
     for (int i = 0; i < 13; i++){
         printf("%c",gameID[i]);
     }
     puts("");   
-    printf("Spielernummer is:%d\n", playerKommando);
+    printf("Spielernummer is:%d\n", spielernummer);
+    printf("before palyer send");
+
+    char playersend[15] = "PLAYER ";
+    if(spielernummer == 0 ){
+        strcat(playersend, "0\n");
+    }else if(spielernummer == 1){
+        strcat(playersend, "1\n");
+    }else{
+        strcat(playersend, " \n");
+    }
+    printf("playersend is %s\n",playersend);
     
+    //check conf file setting
     printf("before, Hostname is: %s\n",config_server.Hostname);
     printf("before, Posrtnumber is: %d\n",config_server.PortNumer); 
     printf("before, GameKindName is: %s\n\n",config_server.GameKindName);
 
-    config(fileName,&config_server);    
+    config(fileName,&config_server);  
+
     char* p_hostname = config_server.Hostname; 
     char portnumber_string[5];
     sprintf(portnumber_string,"%d",config_server.PortNumer);
     char* p_portnumber = portnumber_string;
     char* p_gamekindname = config_server.GameKindName;
     
-
-
-
     printf("after, Hostname is: %s\n",config_server.Hostname);
     printf("after, Posrtnumber is: %d\n",config_server.PortNumer); 
     printf("after, GameKindNameis :%s\n",config_server.GameKindName); 
@@ -230,16 +241,28 @@ int main(int argc, char* argv[]){
 
         freeaddrinfo(results);
 
-        performConnection(socket_fd,gameID);
+        performConnection(socket_fd,gameID,playersend);
 
-        char* charbuffer = (char*)malloc(BUFFER * sizeof(char));
+        /* char* charbuffer = (char*)malloc(BUFFER * sizeof(char));
         ssize_t size;
         size = recv(socket_fd, charbuffer, BUFFER - 1, 0);
         if (size > 0) charbuffer[size] = '\0';
-        printf("Server message: %s\n", charbuffer);
+        printf("Server message: %s\n", charbuffer); */
 
         close(socket_fd);
-        free(charbuffer);
+        //free(charbuffer);
+
+        /* if (shmdt(sharedData) == -1){
+            perror("Error detaching shared memory");
+            exit(EXIT_FAILURE);
+    } 
+        
+    if (shmctl(shm_id, IPC_RMID, NULL) == -1){
+        perror("Error removing shared memory");
+        exit(EXIT_FAILURE);
+    }else{
+        printf("SHM delete \n");
+    } */
         
     printf("Child process end.\n");
     }
