@@ -38,7 +38,7 @@ struct Player{
 
 struct SharedData{
     struct Player player;
-    char gameName[256];
+    char gameName[32];
     int totalPlayers;
     pid_t thinkerPID;
     pid_t connectorPID;

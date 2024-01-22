@@ -128,7 +128,7 @@ void performConnection(int socket_fd, char gameID[13], char playersend[9])
         close(socket_fd);
         exit(EXIT_FAILURE);
     }
-
+    
     // Send the PLAYER command to the server
     ssize_t sent_bytes = send(socket_fd, playersend, strlen(playersend), 0);
 
@@ -155,7 +155,7 @@ void performConnection(int socket_fd, char gameID[13], char playersend[9])
 
     // Close the socket when done
     // close(socket_fd);
-    // 是否不应当关闭socket，且应当free malloc的内存空间？
+    // should the socket not be closed and the space of mallo should be free?
 
     free(charbuffer);
     free(charbufferr);
