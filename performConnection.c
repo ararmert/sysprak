@@ -115,19 +115,26 @@ void performConnection(int socket_fd, char gameID[13], char playersend[9])
     printf("%s\n", charbufferrr);
 
     // Quit if Gamekind is not 'Checkers'
-    char gName[20];
-    strncpy(gName, &charbufferrr[10], 8);
-    gName[8] = '\0';
+    char gkindName[20];
+    strncpy(gkindName, &charbufferrr[10], 8);
+    gkindName[8] = '\0';
 
     char strcheck[] = "Checkers";
 
-    int compare = strcmp(gName, strcheck);
+    int compare = strcmp(gkindName, strcheck);
     if (compare != 0)
     {
         perror("Wrong GameKindName received from the server.\n");
         close(socket_fd);
         exit(EXIT_FAILURE);
     }
+
+    // save Gamename
+    char gName[102];
+    strncpy(gName, &charbufferrr[21], 100);
+    gName[101] = '\0';
+
+    printf("game Name from Webinterface is %s\n",gName);
     
     // Send the PLAYER command to the server
     ssize_t sent_bytes = send(socket_fd, playersend, strlen(playersend), 0);

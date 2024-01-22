@@ -4,7 +4,6 @@ TARGET = sysprak-client
 OBJ = sysprak-client.o handler.o performConnection.o config.o
 
 
-
 $(TARGET): $(OBJ)
 	$(CC) $(CFLAGS) -o $(TARGET): $(OBJ)
 
