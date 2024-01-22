@@ -56,6 +56,8 @@ void performConnection(int socket_fd, char gameID[13], char playersend[9])
         printf("%zd bytes sent(Client Version).\n", sent_byte);
     }
 
+    usleep(500000);
+
     // Set a timeout for receiving server responses (work in progress)
     // struct timeval timeout;
     // timeout.tv_sec = 5;
