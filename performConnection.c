@@ -15,7 +15,7 @@
 #include <fcntl.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
-#include "shared_data.h" 
+#include "shared_data.h" // the new header file
 
 #define BUFFER 256
 
