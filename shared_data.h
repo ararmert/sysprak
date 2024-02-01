@@ -6,7 +6,22 @@
 struct Player{
     int playerNum;
     int playerName;
-    bool isReady;
+    int isReady;
 };
+
+
+struct SharedData{
+    struct Player player;
+    struct Player opponent;
+    char gameName[256];
+    int totalPlayers;
+    int selfPlayer;
+    pid_t thinkerPID;
+    pid_t connectorPID;
+};
+
+
+char* recvLine(int socket_fd, char* buffer);
+
 
 #endif
