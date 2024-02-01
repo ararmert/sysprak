@@ -231,7 +231,7 @@ int main(int argc, char* argv[]){
         close(pipe_fds[1]);
         struct SharedData *sharedData = (struct SharedData *)shmat(shm_id, NULL, 0);
         sharedData->connectorPID = getpid();
-
+        shmdt(sharedData);
         struct addrinfo hints;          
         struct addrinfo* results;        
                            
@@ -292,10 +292,10 @@ int main(int argc, char* argv[]){
         close(socket_fd);
         //free(charbuffer);
 
-         if (shmdt(sharedData) == -1){
+         /*if (shmdt(sharedData) == -1){
             perror("Error detaching shared memory");
             exit(EXIT_FAILURE);
-    } 
+        } */
         
     if (shmctl(shm_id, IPC_RMID, NULL) == -1){
         perror("Error removing shared memory");
