@@ -57,7 +57,7 @@ int main(int argc, char* argv[]){
                     printf("%s\n optarg: ",optarg);
                     strcpy(gameID, optarg);
                 } else {   
-                    printf("Game ID should be 13 digits lang.\n");
+                    printf("Game ID should be 13 digits long.\n");
                     return -1; }
 
                    
@@ -232,6 +232,7 @@ int main(int argc, char* argv[]){
         struct SharedData *sharedData = (struct SharedData *)shmat(shm_id, NULL, 0);
         sharedData->connectorPID = getpid();
         shmdt(sharedData);
+
         struct addrinfo hints;          
         struct addrinfo* results;        
                            
@@ -274,7 +275,7 @@ int main(int argc, char* argv[]){
         freeaddrinfo(results);
 
         printf("%s\n", gameID);
-        printf("%s\n", playersend);
+        //printf("%s\n", playersend);
 
         FILE* readFile = fdopen(socket_fd, "r");
         
@@ -292,10 +293,10 @@ int main(int argc, char* argv[]){
         close(socket_fd);
         //free(charbuffer);
 
-         /*if (shmdt(sharedData) == -1){
-            perror("Error detaching shared memory");
-            exit(EXIT_FAILURE);
-        } */
+        //  if (shmdt(sharedData) == -1){
+        //     perror("Error detaching shared memory");
+        //     exit(EXIT_FAILURE);
+    //} 
         
     if (shmctl(shm_id, IPC_RMID, NULL) == -1){
         perror("Error removing shared memory");
