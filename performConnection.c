@@ -184,7 +184,7 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
     else{
         playersend= "PLAYER \n";
     }
-    printf("%s\n", playersend);
+    //printf("%s\n", playersend);
     ssize_t sent_bytes = send(socket_fd, playersend, strlen(playersend),0);
 
     if (sent_bytes == -1)
@@ -201,6 +201,9 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
     usleep(500000);
 
     // Receive server response after sending PLAYER command.
+ 
+    struct Player player = {};
+    struct SharedData *shared = (struct SharedData *)shmat(shm_id, NULL, 0);
 
     char *playerbuffer = (char*)malloc(BUFFER * sizeof(char));
 
@@ -211,7 +214,10 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
         exit(EXIT_FAILURE);
     }
 
-    printf("%s\n", playerbuffer);
+    
+    if(sscanf(playerbuffer, "+ YOU %d Player %d", &player.playerNum, &player.playerName) == 2) {
+         printf("\nPlayer number: %d (Player name: %d)\n", player.playerNum, player.playerName);
+    } else printf("%s\n", playerbuffer);
 
     usleep(50000);
 
@@ -224,20 +230,30 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
         exit(EXIT_FAILURE);
     }
 
-    printf("%s\n", totalbuffer);
-    
+    if (sscanf(totalbuffer, "+ TOTAL %d", &shared->totalPlayers) == 1) {
+        printf("\nTotal players: %d\n", shared->totalPlayers);
+
+    } else printf("%s\n", totalbuffer);
+
     usleep(50000);
 
-    char *oponentbuffer = (char*)malloc(BUFFER * sizeof(char));
+    char *opponentbuffer = (char*)malloc(BUFFER * sizeof(char));
 
-    if (fgets(oponentbuffer, BUFFER, readFile) == NULL) {
+    if (fgets(opponentbuffer, BUFFER, readFile) == NULL) {
         perror("No server response received from the server after client sent player command.");
         close(socket_fd);
-        free(oponentbuffer);
+        free(opponentbuffer);
         exit(EXIT_FAILURE);
     }
 
-    printf("%s\n", oponentbuffer);
+    if (sscanf(opponentbuffer, "+ %d Player %d %d", &player.playerNum, &player.playerName, &player.isReady) == 3) {
+         if (player.isReady == 1) {
+            printf("\nPlayer %d (Player name: %d) is ready.\n", player.playerNum, player.playerName);
+            } else if (player.isReady == 0) {
+                printf("\nPlayer %d (Player name: %d) is not ready.\n", player.playerNum, player.playerName);
+            }
+
+    } else printf("%s\n", opponentbuffer);
 
 
     usleep(50000);
@@ -251,7 +267,7 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
         exit(EXIT_FAILURE);
     }
 
-    printf("%s\n", endbuffer);
+    printf("\n%s\n", endbuffer);
     //recv(socket_fd, firstbuff, sizeof(firstbuff), 0);
     //printf("%s\n", firstbuff);
    
@@ -319,9 +335,9 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
     free(gamebuff);
     free(playerbuffer);
     free(endbuffer);
-    free(oponentbuffer);
+    free(opponentbuffer);
     free(totalbuffer);
-    // free(quickbuffer) if it's not used in the main function later on
+    
 
 
 
