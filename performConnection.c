@@ -68,31 +68,6 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
 
     usleep(500000);
 
-    // Set a timeout for receiving server responses (work in progress)
-    // struct timeval timeout;
-    // timeout.tv_sec = 5;
-    // timeout.tv_usec = 0;
-
-    // fd_set readfds;
-    // FD_ZERO(&readfds);
-    // FD_SET(socket_fd, &readfds);
-
-    // // Wait for the socket to be ready for reading or until timeout
-    // int ready = select(socket_fd + 1, &readfds, NULL, NULL, &timeout);
-
-    // if (ready == -1) {
-    //     perror("Error in select");
-    //     close(socket_fd);
-    //     exit(EXIT_FAILURE);
-    // } else if (ready == 0) {
-    //     // Timeout occurred
-    //     perror("Timeout waiting for server response");
-    //     close(socket_fd);
-    //     exit(EXIT_FAILURE);
-    // }
-
-
-
     // Receive newly added server response(Already happy with your AI?) and the response about Client Version
     char *secondbuff = (char *)malloc(BUFFER * sizeof(char));
     if (fgets(secondbuff, BUFFER, readFile) == NULL) {
@@ -286,6 +261,8 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
     }
 
     printf("\n%s\n", endbuffer);
+
+   
     //recv(socket_fd, firstbuff, sizeof(firstbuff), 0);
     //printf("%s\n", firstbuff);
    
@@ -344,7 +321,6 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
         // printf("%s\n", quickbuffer); to test
 
         // printf("%d\n", player_received); to print the size of buffer being used
-    
 
     free(firstbuff);
     free(secondbuff);
@@ -355,10 +331,6 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
     free(endbuffer);
     free(opponentbuffer);
     free(totalbuffer);
-    
-
-
-
 }  
 
 
