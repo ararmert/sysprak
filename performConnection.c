@@ -148,10 +148,19 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
         close(socket_fd);
         exit(EXIT_FAILURE);
     } else if (strcmp(fourthbuff, "+ PLAYING Checkers")) {
+       
         printf("%s\n", fourthbuff);
 
+
+        // if (strcmp(fourthbuff, "- Game does not exist")) {
+        // perror("Error: Invalid Game-ID: This game does not exist.");
+        // free(fourthbuff);
+        // close(socket_fd);
+        // exit(EXIT_FAILURE);
+       
+
     } else {
-        printf("%s\n", fourthbuff);
+        //printf("%s\n", fourthbuff);
         
 
         perror("Wrong game kind received from the server.");
@@ -164,7 +173,16 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
     // save Gamename
     char *gamebuff = (char *)malloc(BUFFER * sizeof(char));
     if (fgets(gamebuff, BUFFER, readFile) == NULL) {
-        perror("Error receiving server response after sending client version.");
+        
+        // Quit if game doesn't exist.
+        if (strcmp(fourthbuff, "- Game does not exist")) {
+        perror("Error: Invalid Game-ID: This game does not exist.");
+        free(fourthbuff);
+        close(socket_fd);
+        exit(EXIT_FAILURE);
+    }
+
+        perror("Error receiving game name from the server.");
         free(gamebuff);
         close(socket_fd);
         exit(EXIT_FAILURE);
@@ -216,7 +234,7 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
 
     
     if(sscanf(playerbuffer, "+ YOU %d Player %d", &player.playerNum, &player.playerName) == 2) {
-         printf("\nPlayer number: %d (Player name: %d)\n", player.playerNum, player.playerName);
+         printf("Player number: %d (Player name: %d)\n", player.playerNum, player.playerName);
     } else printf("%s\n", playerbuffer);
 
     usleep(50000);
