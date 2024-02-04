@@ -145,6 +145,10 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
 
     }
     
+
+    struct Player player = {};
+    struct SharedData *shared = (struct SharedData *)shmat(shm_id, NULL, 0);
+
     // save Gamename
     char *gamebuff = (char *)malloc(BUFFER * sizeof(char));
     if (fgets(gamebuff, BUFFER, readFile) == NULL) {
@@ -163,6 +167,9 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
         exit(EXIT_FAILURE);
     } else {
         printf("Game name:\n %s\n", gamebuff);
+
+        strncpy(shared->gameName, gamebuff, sizeof(shared->gameName) - 1);
+        shared->gameName[sizeof(shared->gameName) - 1] = '\0';
     }
    
     //usleep(500000);
@@ -195,8 +202,7 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
 
     // Receive server response after sending PLAYER command.
  
-    struct Player player = {};
-    struct SharedData *shared = (struct SharedData *)shmat(shm_id, NULL, 0);
+    
 
     char *playerbuffer = (char*)malloc(BUFFER * sizeof(char));
 
@@ -210,6 +216,7 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
     
     if(sscanf(playerbuffer, "+ YOU %d Player %d", &player.playerNum, &player.playerName) == 2) {
          printf("Player number: %d (Player name: %d)\n", player.playerNum, player.playerName);
+
     } else printf("%s\n", playerbuffer);
 
     usleep(50000);
