@@ -22,6 +22,7 @@
 #include "performConnection.h"
 #include "config.h"
 #include "shared_data.h"
+#include "move_wait_over.h"
 
 #define BUFFER 256
 
@@ -284,19 +285,10 @@ int main(int argc, char* argv[]){
 
         performConnection(socket_fd,gameID,playersend,shm_id,readFile);
 
-        /* char* charbuffer = (char*)malloc(BUFFER * sizeof(char));
-        ssize_t size;
-        size = recv(socket_fd, charbuffer, BUFFER - 1, 0);
-        if (size > 0) charbuffer[size] = '\0';
-        printf("Server message: %s\n", charbuffer); */
+        move_wait_over(socket_fd,readFile);
 
         close(socket_fd);
-        //free(charbuffer);
-
-        //  if (shmdt(sharedData) == -1){
-        //     perror("Error detaching shared memory");
-        //     exit(EXIT_FAILURE);
-    //} 
+       
         
     if (shmctl(shm_id, IPC_RMID, NULL) == -1){
         perror("Error removing shared memory");
