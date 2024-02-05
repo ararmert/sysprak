@@ -155,7 +155,7 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
         
         // Quit if game doesn't exist.
         if (strcmp(fourthbuff, "- Game does not exist")) {
-        perror("Error: Invalid Game-ID: This game does not exist.");
+        fprintf(stderr, "Error: Invalid Game-ID: This game does not exist.\n");
         free(fourthbuff);
         close(socket_fd);
         exit(EXIT_FAILURE);
@@ -166,7 +166,7 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
         close(socket_fd);
         exit(EXIT_FAILURE);
     } else {
-        printf("Game name:\n %s\n", gamebuff);
+        printf("Game Name: \n%s\n", gamebuff);
 
         strncpy(shared->gameName, gamebuff, sizeof(shared->gameName) - 1);
         shared->gameName[sizeof(shared->gameName) - 1] = '\0';
@@ -176,13 +176,13 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
 
     // Send the PLAYER command to the server
     if(strstr(playersend, "0")){
-        playersend= "PLAYER 0\n";
+        playersend = "PLAYER 0\n";
     }
     else if(strstr(playersend, "1")){
-        playersend= "PLAYER 1\n";
+        playersend = "PLAYER 1\n";
     }
     else{
-        playersend= "PLAYER \n";
+        playersend = "PLAYER \n";
     }
     //printf("%s\n", playersend);
     ssize_t sent_bytes = send(socket_fd, playersend, strlen(playersend),0);
@@ -207,11 +207,22 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
     char *playerbuffer = (char*)malloc(BUFFER * sizeof(char));
 
     if (fgets(playerbuffer, BUFFER, readFile) == NULL) {
-        perror("No server response received from the server after client sent player command.");
+        fprintf(stderr, "No server response received from the server after client sent player command.\n");
+        close(socket_fd);
+        free(playerbuffer);
+        exit(EXIT_FAILURE);
+
+    
+
+
+    } else if (strcmp(playerbuffer, "- No free player\n") == 0){
+        fprintf(stderr, "The selected player slot is not available. Please run the program again with a different player selection.\n");
         close(socket_fd);
         free(playerbuffer);
         exit(EXIT_FAILURE);
     }
+
+    
 
     
     if(sscanf(playerbuffer, "+ YOU %d Player %d", &player.playerNum, &player.playerName) == 2) {
@@ -224,7 +235,7 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
     char *totalbuffer = (char*)malloc(BUFFER * sizeof(char));
 
     if (fgets(totalbuffer, BUFFER, readFile) == NULL) {
-        perror("No server response received from the server after client sent player command.");
+        fprintf(stderr,"No server response received from the server after client sent player command.\n");
         close(socket_fd);
         free(totalbuffer);
         exit(EXIT_FAILURE);
