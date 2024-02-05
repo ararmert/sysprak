@@ -45,7 +45,7 @@ int main(int argc, char* argv[]){
     int spielernummer = -1;
    // char parameterName[256];
     struct config config_server = {"un know",0,"un know"};
-    char fileName[256]="client.conf\0";
+    char fileName[256] = "client.conf\0";
 
     //analyse Command Parameters as Game-Id, Spielnummer and configuration
     int parameters;
@@ -88,7 +88,7 @@ int main(int argc, char* argv[]){
                     count++;
                 }                 
                 if(count != 1){
-                    printf("Spielernummer should 1 digit long.\n");
+                    printf("Spielernummer should be 1 digit long.\n");
                     return -1;
                 }else{
                    if((atoi(optarg) != 1) && (atoi(optarg) != 0)){
@@ -106,7 +106,7 @@ int main(int argc, char* argv[]){
     }
 
     //check game ID,Spielernummer and configuration
-    printf("game id is:");
+    printf("GAME-ID: ");
     for (int i = 0; i < 13; i++){
         printf("%c",gameID[i]);
     
@@ -114,10 +114,10 @@ int main(int argc, char* argv[]){
     
   
     puts("");   
-    printf("Spielernummer is:%d\n", spielernummer);
-    printf("before palyer send");
+    printf("Spielernummer is: %d\n", spielernummer);
+    
 
-    printf("GAMEID TEST BEFORE: %s\n", gameID);
+    
 
     char playersend[15] = "PLAYER ";
      if(spielernummer == 0 ){
@@ -128,7 +128,7 @@ int main(int argc, char* argv[]){
          strcat(playersend, " \n");
      }
      printf("playersend is %s\n",playersend);
-     printf("GAMEID TEST AFTER: %s\n", gameID);
+     printf("GAME-ID: %s\n", gameID);
 
      
     
@@ -145,9 +145,9 @@ int main(int argc, char* argv[]){
     char* p_portnumber = portnumber_string;
     char* p_gamekindname = config_server.GameKindName;
     
-    printf("after, Hostname is: %s\n",config_server.Hostname);
-    printf("after, Posrtnumber is: %d\n",config_server.PortNumer); 
-    printf("after, GameKindNameis :%s\n",config_server.GameKindName); 
+    printf("Hostname: %s\n",config_server.Hostname);
+    printf("Portnumber: %d\n",config_server.PortNumer); 
+    printf("GameKindName: %s\n",config_server.GameKindName); 
     
     
 
@@ -181,8 +181,6 @@ int main(int argc, char* argv[]){
         
     }
 
-    
-    
     int pipe_fds[2];
 
     // pipe-Erstellung
@@ -194,20 +192,20 @@ int main(int argc, char* argv[]){
     pid_t pid  = fork();
 
 
-    if (pid< 0) {
+    if (pid < 0) {
         perror ("Fehler bei fork().");
         exit(EXIT_FAILURE);
     } 
-    // parentprocess
+    // parent process
     if (pid > 0) {
         
         printf("Parent process beginn.\n");
         //wait for childprocess
         close(pipe_fds[0]);
         pid = waitpid(pid, NULL, 0);
-        printf("parent process end.\n");
+        printf("Parent process end.\n");
         if (pid < 0) {
-        perror ("Fehler beim Warten auf Kindprozess.");
+        perror ("Fehler beim Warten auf Kindprozess");
         exit(EXIT_FAILURE);
         }
 
@@ -251,7 +249,7 @@ int main(int argc, char* argv[]){
     
         struct sockaddr_in *addr;       
         addr = (struct sockaddr_in*)results->ai_addr;
-        printf("server ip is : %s\n",inet_ntoa(addr->sin_addr));
+        printf("Server ip: %s\n",inet_ntoa(addr->sin_addr));
     
         struct sockaddr_in address_server;                 
         address_server.sin_family = AF_INET;
@@ -259,8 +257,8 @@ int main(int argc, char* argv[]){
         address_server.sin_addr = addr->sin_addr; 
         //prepare socket
         int socket_fd = socket(PF_INET,SOCK_STREAM,0);  
-        if  (socket_fd == -1){
-            perror("Error by creating socket");
+        if (socket_fd == -1){
+            perror("Error creating socket.");
         }   
     
 
@@ -275,20 +273,27 @@ int main(int argc, char* argv[]){
 
         freeaddrinfo(results);
 
-        printf("%s\n", gameID);
+        //printf("%s\n", gameID);
         //printf("%s\n", playersend);
 
         FILE* readFile = fdopen(socket_fd, "r");
         
-
-        
-
         performConnection(socket_fd,gameID,playersend,shm_id,readFile);
 
         move_wait_over(socket_fd,readFile);
+        /* char* charbuffer = (char*)malloc(BUFFER * sizeof(char));
+        ssize_t size;
+        size = recv(socket_fd, charbuffer, BUFFER - 1, 0);
+        if (size > 0) charbuffer[size] = '\0';
+        printf("Server message: %s\n", charbuffer); */
 
         close(socket_fd);
-       
+        //free(charbuffer);
+
+        //  if (shmdt(sharedData) == -1){
+        //     perror("Error detaching shared memory");
+        //     exit(EXIT_FAILURE);
+    //} 
         
     if (shmctl(shm_id, IPC_RMID, NULL) == -1){
         perror("Error removing shared memory");
