@@ -18,6 +18,8 @@ struct SharedData{
     int selfPlayer;
     pid_t thinkerPID;
     pid_t connectorPID;
+
+    bool shouldThink;
 };
 
 

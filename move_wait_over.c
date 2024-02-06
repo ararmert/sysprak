@@ -5,20 +5,22 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include "readLine.h"
+#include "board.h"
 #define BUFFER 256
 
 
 void move_wait_over (int socket_fd,FILE* readFile){
 
 char spielstand[8][8]= {
-        {'1','2','3','4','5','6','7','8'},
-        {'2','2','3','4','5','6','7','8'},
-        {'3','2','3','4','5','6','7','8'},
-        {'4','2','3','4','5','6','7','8'},
-        {'5','2','3','4','5','6','7','8'},
-        {'6','2','3','4','5','6','7','8'},
-        {'7','2','3','4','5','6','7','8'},
-        {'8','2','3','4','5','6','7','8'}}; 
+        {'*', 'b', '*', 'b', '*', 'b', '*', 'b'},
+        {'b', '*', 'b', '*', 'b', '*', 'b', '*'},
+        {'*', 'b', '*', 'b', '*', 'b', '*', 'b'},
+        {'*', '*', '*', '*', '*', '*', '*', '*'},
+        {'*', '*', '*', '*', '*', '*', '*', '*'},
+        {'w', '*', 'w', '*', 'w', '*', 'w', '*'},
+        {'*', 'w', '*', 'w', '*', 'w', '*', 'w'},
+        {'w', '*', 'w', 'w', 'w', '*', 'w', '*'},
+        }; 
 int k = 4;
 
 while(1){
@@ -29,7 +31,7 @@ while(1){
     
     readLine(buffer_mwo,readFile);
     
-    printf("%s。\n",buffer_mwo);
+    printf("%s\n",buffer_mwo);
 
     if(strcmp(buffer_mwo,"+ WAIT\n")== 0){
         
@@ -100,6 +102,12 @@ while(1){
             printf("\n");
             free(buffer_spielstand); 
         }
+
+
+        struct Piece pieces[24]; // 存储棋子的数组
+        CatchPieces(pieces, spielstand); // 填充 pieces 数组
+        PrintSavedSD(spielstand); // 打印棋盘
+        printPieces(pieces, 24); // 打印棋子信息
 
         char buffer_end[32];
         

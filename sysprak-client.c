@@ -23,6 +23,7 @@
 #include "config.h"
 #include "shared_data.h"
 #include "move_wait_over.h"
+#include "board.h"
 
 #define BUFFER 256
 
@@ -180,6 +181,28 @@ int main(int argc, char* argv[]){
 
         
     }
+//SHM in main get & at
+int SHMSpielstand = shmget(IPC_PRIVATE, 24 * sizeof(struct Piece), IPC_CREAT | 0666);
+   if (SHMSpielstand == -1){
+    perror("Error shmget for spielstand");
+    exit(EXIT_FAILURE);
+   }else{
+    printf("SHMSpielstand succesfully create\n");
+   }
+    //将共享内存添加到process 空间 shmat
+    /*
+    shmid 共享内存标识符
+    shmaddr 共享内存映射地址，NULL 由系统指定
+    shmflg 共享内存段的访问权限和映射提交 
+        0 SHM具有可读可写权限
+        SHM_RONLY 只读
+        SHM_RND （shmaddr非空时有效） 没有指定则连接到shmaddr所指定的地址上， 
+    */
+    struct Piece *pieces = (struct Piece *)shmat(SHMSpielstand, NULL, 0);
+    if ((intptr_t)pieces == -1) {
+        perror("Error shmat SHMSpielstand");
+        exit(EXIT_FAILURE);
+    }
 
     int pipe_fds[2];
 
@@ -220,6 +243,22 @@ int main(int argc, char* argv[]){
     }else{
         printf("SHM delete \n");
     }
+
+    //SHM dt & ctr in parent-process
+    if (shmdt(pieces) == -1) {
+        perror("Error detaching SHMSpielstand in parent-process\n");
+        exit(EXIT_FAILURE);
+    }else{
+        printf("SHMSPielstand in parent-process detached\n");
+    }
+
+    if (shmctl(SHMSpielstand, IPC_RMID, NULL) == -1){
+        perror("Error removing SHMSpielstand in parent-process");
+        exit(EXIT_FAILURE);
+    }else{
+        printf("SHMSpielstand in parent-process deleted\n");
+    }
+
     }
 
     /* Child process-------> Connector */
@@ -231,7 +270,7 @@ int main(int argc, char* argv[]){
         struct SharedData *sharedData = (struct SharedData *)shmat(shm_id, NULL, 0);
         sharedData->connectorPID = getpid();
         shmdt(sharedData);
-
+    
         struct addrinfo hints;          
         struct addrinfo* results;        
                            
@@ -280,6 +319,21 @@ int main(int argc, char* argv[]){
         
         performConnection(socket_fd,gameID,playersend,shm_id,readFile);
 
+    // //Flag shouldThink !!!!Temporarilly in Notes, cuz if not it can not work
+    // // 设置 shouldThink 标志
+    // sharedData->shouldThink = true;
+
+    // // 发送信号给 Thinker 进程
+    // kill(sharedData->thinkerPID, SIGUSR1);
+
+
+    //SHM at in Childprocess
+    struct Piece *pieces = (struct Piece *)shmat(SHMSpielstand, NULL, 0);
+    if ((intptr_t)pieces == -1) {
+        perror("Error shmat SHMSpielstand");
+        exit(EXIT_FAILURE);
+    }
+
         move_wait_over(socket_fd,readFile);
         /* char* charbuffer = (char*)malloc(BUFFER * sizeof(char));
         ssize_t size;
@@ -301,7 +355,14 @@ int main(int argc, char* argv[]){
     }else{
         printf("SHM deleted. \n");
     } 
-        
+
+    if (shmdt(pieces) == -1) {
+        perror("Error detaching SHMSpielstand in child-process\n");
+        exit(EXIT_FAILURE);
+    }else{
+        printf("SHMSPilestand in child-process detached\n");
+    }
+
     printf("Child process end.\n");
     }
      

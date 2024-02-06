@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Werror
 TARGET = sysprak-client
-OBJ = sysprak-client.o handler.o performConnection.o config.o shared_data.o move_wait_over.o readLine.o
+OBJ = sysprak-client.o handler.o performConnection.o config.o shared_data.o move_wait_over.o readLine.o board.o
 
 
 $(TARGET): $(OBJ)
@@ -27,5 +27,8 @@ move_wait_over.o:move_wait_over.c move_wait_over.h
 
 readLine.o:readLine.c readLine.h
 	$(CC) $(CFLAGS) -c readLine.c
+
+board.o:board.c board.h
+	$(CC) $(CFLAGS) -c board.c
 clean:
 	rm *.o sysprak-client 
