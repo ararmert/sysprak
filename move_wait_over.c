@@ -9,9 +9,9 @@
 #define BUFFER 256
 
 
-void move_wait_over (int socket_fd,FILE* readFile){
+void move_wait_over (int socket_fd,FILE* readFile,struct Piece* pieces){
 
-char spielstand[8][8]= {
+    char spielstand[8][8]= {
         {'*', 'b', '*', 'b', '*', 'b', '*', 'b'},
         {'b', '*', 'b', '*', 'b', '*', 'b', '*'},
         {'*', 'b', '*', 'b', '*', 'b', '*', 'b'},
@@ -21,11 +21,10 @@ char spielstand[8][8]= {
         {'*', 'w', '*', 'w', '*', 'w', '*', 'w'},
         {'w', '*', 'w', 'w', 'w', '*', 'w', '*'},
         }; 
-int k = 4;
+    int k = 4;
 
 while(1){
 
-   
     char* buffer_mwo = (char*)malloc(BUFFER* sizeof(char));   
    
     
@@ -104,10 +103,7 @@ while(1){
         }
 
 
-        struct Piece pieces[24]; // 存储棋子的数组
-        CatchPieces(pieces, spielstand); // 填充 pieces 数组
-        PrintSavedSD(spielstand); // 打印棋盘
-        printPieces(pieces, 24); // 打印棋子信息
+        
 
         char buffer_end[32];
         
@@ -127,7 +123,13 @@ while(1){
         printf("%zd bytes sent(THINKING).\n", sent_byte);
         }
         usleep(500000);
-        
+
+         // 存储棋子的数组
+        CatchPieces(pieces, spielstand); // 填充 pieces 数组
+        PrintSavedSD(spielstand); // 打印棋盘
+        printPieces(pieces, 24); // 打印棋子信息
+
+ 
         
         char* buffer_okthink = (char*)malloc(256 * sizeof(char));                                   
         readLine(buffer_okthink,readFile);

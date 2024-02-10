@@ -61,26 +61,7 @@ int main(int argc, char* argv[]){
                 } else {   
                     printf("Game ID should be 13 digits long.\n");
                     return -1; }
-
-                   
-                
-
-                //Determines whether game id is 13 digits long.
-                // while(*(optarg+i) != '\0'){
-                //     i++;
-                //     count++;
-                // }                 
-                // if(count != 13){
-                //     printf("Game ID should be 13 digits lang.\n");
-                //     return -1;
-                // }else{
-                //     i = 0;
-                //     while(*(optarg+i) != '\0'){
-                //         gameID[i] = *(optarg+i);
-                //         i++;
-                //         printf("Game ID: %s\n", gameID);
-                //     }  
-                                        
+            
                 break;
             case 'p':
                 //Determines whether spielernummer is 0 or 1.
@@ -118,8 +99,6 @@ int main(int argc, char* argv[]){
     printf("Spielernummer is: %d\n", spielernummer);
     
 
-    
-
     char playersend[15] = "PLAYER ";
      if(spielernummer == 0 ){
          strcat(playersend, "0\n");
@@ -131,12 +110,7 @@ int main(int argc, char* argv[]){
      printf("playersend is %s\n",playersend);
      printf("GAME-ID: %s\n", gameID);
 
-     
-    
-    //check conf file setting
-    // printf("before, Hostname is: %s\n",config_server.Hostname);
-    // printf("before, Posrtnumber is: %d\n",config_server.PortNumer); 
-    // printf("before, GameKindName is: %s\n\n",config_server.GameKindName);
+
 
     config(fileName,&config_server);  
 
@@ -146,17 +120,16 @@ int main(int argc, char* argv[]){
     char* p_portnumber = portnumber_string;
     char* p_gamekindname = config_server.GameKindName;
     
-    printf("Hostname: %s\n",config_server.Hostname);
+    /* printf("Hostname: %s\n",config_server.Hostname);
     printf("Portnumber: %d\n",config_server.PortNumer); 
     printf("GameKindName: %s\n",config_server.GameKindName); 
-    
-    
+     */
 
     printf("<< Dame Client start! >>\n\n");
 
     struct SharedData *sharedData;
 
-    // Shared Memory Bereich
+    // Shared Memory Bereich about game information
     int shm_id = shmget(IPC_PRIVATE, sizeof(struct SharedData), IPC_CREAT | 0666); 
     if (shm_id == -1){
         perror("Error creating shared memory segment.");
@@ -175,37 +148,28 @@ int main(int argc, char* argv[]){
         sharedData->totalPlayers = 2;
         sharedData->thinkerPID = getpid();
         sharedData->connectorPID = 0;
-        
-
-        
-
-        
+    
     }
-//SHM in main get & at
-int SHMSpielstand = shmget(IPC_PRIVATE, 24 * sizeof(struct Piece), IPC_CREAT | 0666);
-   if (SHMSpielstand == -1){
-    perror("Error shmget for spielstand");
-    exit(EXIT_FAILURE);
-   }else{
-    printf("SHMSpielstand succesfully create\n");
-   }
-    //将共享内存添加到process 空间 shmat
-    /*
-    shmid 共享内存标识符
-    shmaddr 共享内存映射地址，NULL 由系统指定
-    shmflg 共享内存段的访问权限和映射提交 
-        0 SHM具有可读可写权限
-        SHM_RONLY 只读
-        SHM_RND （shmaddr非空时有效） 没有指定则连接到shmaddr所指定的地址上， 
-    */
+
+    //SHM about piece in main get & at  
+    int SHMSpielstand = shmget(IPC_PRIVATE, 24 * sizeof(struct Piece), IPC_CREAT | 0666);
+    if (SHMSpielstand == -1){
+        perror("Error shmget for spielstand");
+        exit(EXIT_FAILURE);
+    }else{
+        printf("SHMSpielstand succesfully create\n");
+    }
+    //SHM about pice attach in main
     struct Piece *pieces = (struct Piece *)shmat(SHMSpielstand, NULL, 0);
     if ((intptr_t)pieces == -1) {
         perror("Error shmat SHMSpielstand");
         exit(EXIT_FAILURE);
     }
+    
+
+
 
     int pipe_fds[2];
-
     // pipe-Erstellung
     if(pipe(pipe_fds) == -1) {
         perror("Pipe konnte nicht erstellt werden.");
@@ -214,7 +178,6 @@ int SHMSpielstand = shmget(IPC_PRIVATE, 24 * sizeof(struct Piece), IPC_CREAT | 0
 
     pid_t pid  = fork();
 
-
     if (pid < 0) {
         perror ("Fehler bei fork().");
         exit(EXIT_FAILURE);
@@ -222,43 +185,49 @@ int SHMSpielstand = shmget(IPC_PRIVATE, 24 * sizeof(struct Piece), IPC_CREAT | 0
     // parent process
     if (pid > 0) {
         
-        printf("Parent process beginn.\n");
+        printf("Parent process Thinker beginn.\n");
         //wait for childprocess
         close(pipe_fds[0]);
+
+        //TO-DO
+
         pid = waitpid(pid, NULL, 0);
-        printf("Parent process end.\n");
+
+
         if (pid < 0) {
         perror ("Fehler beim Warten auf Kindprozess");
         exit(EXIT_FAILURE);
         }
 
+
+        //SHM about information dt & ctl in parent process
         if (shmdt(sharedData) == -1){
              perror("Error detaching shared memory");
              exit(EXIT_FAILURE);
-    } 
-        
-    if (shmctl(shm_id, IPC_RMID, NULL) == -1){
-        perror("Error removing shared memory");
-        exit(EXIT_FAILURE);
-    }else{
-        printf("SHM delete \n");
-    }
+        } 
+        if (shmctl(shm_id, IPC_RMID, NULL) == -1){
+            perror("Error removing shared memory");
+            exit(EXIT_FAILURE);
+        }else{
+            printf("Information SHM in parent delete \n");
+        }
 
-    //SHM dt & ctr in parent-process
-    if (shmdt(pieces) == -1) {
-        perror("Error detaching SHMSpielstand in parent-process\n");
-        exit(EXIT_FAILURE);
-    }else{
-        printf("SHMSPielstand in parent-process detached\n");
-    }
+        //SHM dt & ctr in parent-process
+        if (shmdt(pieces) == -1) {
+            perror("Error detaching SHMSpielstand in parent-process\n");
+            exit(EXIT_FAILURE);
+        }else{          
+            printf("SHMSPielstand in parent-process detached\n");
+        }
+        if (shmctl(SHMSpielstand, IPC_RMID, NULL) == -1){
+            perror("Error removing SHMSpielstand in parent-process");
+            exit(EXIT_FAILURE);
+        }else{
+            printf("SHMSpielstand in parent-process deleted\n");
+        }
 
-    if (shmctl(SHMSpielstand, IPC_RMID, NULL) == -1){
-        perror("Error removing SHMSpielstand in parent-process");
-        exit(EXIT_FAILURE);
-    }else{
-        printf("SHMSpielstand in parent-process deleted\n");
-    }
 
+    printf("Parent process end.\n");
     }
 
     /* Child process-------> Connector */
@@ -312,49 +281,40 @@ int SHMSpielstand = shmget(IPC_PRIVATE, 24 * sizeof(struct Piece), IPC_CREAT | 0
 
         freeaddrinfo(results);
 
-        //printf("%s\n", gameID);
-        //printf("%s\n", playersend);
+        
 
         FILE* readFile = fdopen(socket_fd, "r");
         
         performConnection(socket_fd,gameID,playersend,shm_id,readFile);
 
-    // //Flag shouldThink !!!!Temporarilly in Notes, cuz if not it can not work
-    // // 设置 shouldThink 标志
-    // sharedData->shouldThink = true;
+        // //Flag shouldThink !!!!Temporarilly in Notes, cuz if not it can not work
+        // // 设置 shouldThink 标志
+        // sharedData->shouldThink = true;
 
-    // // 发送信号给 Thinker 进程
-    // kill(sharedData->thinkerPID, SIGUSR1);
+        // // 发送信号给 Thinker 进程
+        // kill(sharedData->thinkerPID, SIGUSR1);
 
 
-    //SHM at in Childprocess
-    struct Piece *pieces = (struct Piece *)shmat(SHMSpielstand, NULL, 0);
-    if ((intptr_t)pieces == -1) {
+        //SHM at in Childprocess
+        struct Piece *pieces = (struct Piece *)shmat(SHMSpielstand, NULL, 0);
+        if ((intptr_t)pieces == -1) {
         perror("Error shmat SHMSpielstand");
         exit(EXIT_FAILURE);
     }
 
-        move_wait_over(socket_fd,readFile);
-        /* char* charbuffer = (char*)malloc(BUFFER * sizeof(char));
-        ssize_t size;
-        size = recv(socket_fd, charbuffer, BUFFER - 1, 0);
-        if (size > 0) charbuffer[size] = '\0';
-        printf("Server message: %s\n", charbuffer); */
+        move_wait_over(socket_fd,readFile,pieces);
+        
 
         close(socket_fd);
-        //free(charbuffer);
-
-        //  if (shmdt(sharedData) == -1){
-        //     perror("Error detaching shared memory");
-        //     exit(EXIT_FAILURE);
-    //} 
+       
         
-    if (shmctl(shm_id, IPC_RMID, NULL) == -1){
-        perror("Error removing shared memory");
-        exit(EXIT_FAILURE);
-    }else{
-        printf("SHM deleted. \n");
-    } 
+
+
+    
+    if (shmdt(sharedData) == -1){
+             perror("Error detaching shared memory");
+             exit(EXIT_FAILURE);
+        } 
 
     if (shmdt(pieces) == -1) {
         perror("Error detaching SHMSpielstand in child-process\n");
@@ -362,6 +322,8 @@ int SHMSpielstand = shmget(IPC_PRIVATE, 24 * sizeof(struct Piece), IPC_CREAT | 0
     }else{
         printf("SHMSPilestand in child-process detached\n");
     }
+
+    
 
     printf("Child process end.\n");
     }
