@@ -1,0 +1,1 @@
+void think(int pipe_write_fd);
