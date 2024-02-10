@@ -24,6 +24,8 @@
 #include "shared_data.h"
 #include "move_wait_over.h"
 #include "board.h"
+#include "sendingMoveFromPipe.h"
+
 
 #define BUFFER 256
 
@@ -304,6 +306,7 @@ int main(int argc, char* argv[]){
 
         move_wait_over(socket_fd,readFile,pieces);
         
+        SendingMoveFromPipe(pipe_fds[0],socket_fd);
 
         close(socket_fd);
        
