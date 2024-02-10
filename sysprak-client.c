@@ -328,6 +328,6 @@ int main(int argc, char* argv[]){
     printf("Child process end.\n");
     }
      
-
+    free(gameID);
     return 0;
 }

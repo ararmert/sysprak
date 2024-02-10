@@ -281,64 +281,7 @@ void performConnection(int socket_fd, char gameID[13], char playersend[], int sh
     printf("\n%s\n", endbuffer);
 
    
-    //recv(socket_fd, firstbuff, sizeof(firstbuff), 0);
-    //printf("%s\n", firstbuff);
-   
-    /*char quickbuffer[50];
-    struct Player player = {};
-    struct SharedData *shared = (struct SharedData *)shmat(shm_id, NULL, 0);
 
-    while (strlen(playerbuffer) > 0 && strlen(playerbuffer) < 100) playerbuffer[0] = '\0';
-
-    {
-        //snprintf(quickbuffer, sizeof(quickbuffer), "%.42s", playerbuffer); // store the needed information from the server response in quickbuffer
-
-        char* line = strtok(quickbuffer, "\n");
-
-        // Line-by-line parsing for formatting default server responses into readable language.
-
-    while (line != NULL) {
-        if (sscanf(line, "+ YOU %d Player %d", &player.playerNum, &player.playerName) == 2) {
-            // Parse the first line
-            printf("Player %d (Name: %d)\n", player.playerNum, player.playerName);
-        } else if (sscanf(line, "+ TOTAL %d", &shared->totalPlayers) == 1) {
-            // Parse the second line
-            printf("Total players: %d\n", shared->totalPlayers);
-        } else if (sscanf(line, "+ %d Player %d %d", &player.playerNum, &player.playerName, &player.isReady) == 3) {
-            // Parse the third line
-            if (player.isReady == 1) {
-            printf("Is Player %d (Name: %d) ready? Yes!", player.playerNum, player.playerName);
-            } else if (player.isReady == 0) {
-                printf("Is Player %d (Name: %d) ready? No!", player.playerNum, player.playerName);
-            }
-        } else {
-            // Else:
-            printf("Unrecognized server response: %s\n", line);
-        }
-
-        // Move to the next line
-        line = strtok(NULL, "\n");
-    }
-
-}
-
-    char *endbuff = (char *)malloc(BUFFER * sizeof(char));
-    endbuff = recvLine(socket_fd, endbuff);
-    if (strcmp(endbuff, "-1")) {
-        endbuff[0] = '\0';
-    printf("%s\n", endbuff);
-
-    } else {
-        perror("Error receiving server response.");
-        close(socket_fd);
-        exit(EXIT_FAILURE);
-    }
-    */
-
-
-        // printf("%s\n", quickbuffer); to test
-
-        // printf("%d\n", player_received); to print the size of buffer being used
 
     free(firstbuff);
     free(secondbuff);
