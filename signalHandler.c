@@ -50,8 +50,8 @@ void signalHandler(){
         int i = 0;
         int blackCount = 0;
         int whiteCount = 0;
-        int numberofOwnStones;
-        int numberOfOpponentStones;
+        int numberofOwnStones = 0;
+        int numberOfOpponentStones = 0;
         while (i < 24){ // i < steinanzahl von yilila
             
             if(pieces[i].exist == false) {
