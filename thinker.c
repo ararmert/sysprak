@@ -27,7 +27,7 @@ enum Status{
 int** spielfeld;
 int* LEERES_FELD;
 
-void split(struct position*, struct position** opponent, struct position** own);
+//void split(struct position*, struct position** opponent, struct position** own);
 
 
 bool isFieldFree(int y, int x, struct Piece* opponent, struct Piece* spielerPosition, int sizeopponent, int sizespielerPosition){
