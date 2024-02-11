@@ -47,8 +47,8 @@ return result;
 }
 //
 void signalHandler(){
-    printf("signal Hadler begins\n");
-    if(sharedData->shouldThink==false){
+    if(sharedData->shouldThink == true){
+        sharedData->shouldThink == false;
         int i = 0;
         int blackCount = 0;
         int whiteCount = 0;
@@ -129,14 +129,16 @@ void signalHandler(){
             }
             
         }
-
+         
         //call rihannas functions with the required parameters
         
-        //move(canAnyStoneCapture(own, opponent),own, opponent);
+        move(canAnyStoneCapture(own, opponent),own, opponent);
 
         free(own);
         free(opponent);
+
         printf("signalHandler.c ran successfully.\n");
+       
             
         }
 
