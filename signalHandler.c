@@ -16,36 +16,37 @@ static struct Piece *pieces = NULL;
 
 int charToInt(char y){
 switch (y){
+int result;
 case 'A':
-int result= 1;
+result= 1;
 break;
 case 'B':
-int result= 2;
+result= 2;
 break;
 case 'C':
-int result = 3;
+result = 3;
 break;
 case 'D':
-int result = 4;
+result = 4;
 break;
 case 'E':
-int result = 5;
+result = 5;
 break;
 case 'F':
-int result = 6;
+result = 6;
 break;
 case 'G':
-int result = 7;
+result = 7;
 break;
 case 'H':
-int result = 8;
+result = 8;
 break;
 return result;
 }
 }
 //
 void signalHandler(){
-    if(sharedData->shouldThink=false){
+    if(sharedData->shouldThink==false){
         int i = 0;
         int blackCount = 0;
         int whiteCount = 0;
@@ -78,7 +79,7 @@ void signalHandler(){
         struct position *own =  malloc(sizeof(struct Piece) * numberofOwnStones);
         struct position *opponent = malloc(sizeof(struct Piece) * numberOfOpponentStones);
 
-        int i = 0;
+        i = 0;
         int self = 0;
         int opp = 0;
         while (i < 24){
@@ -129,7 +130,7 @@ void signalHandler(){
 
         //call rihannas functions with numberofownstones and numberofopponentstones parameters
         
-        move(canAnyStoneCapture(own, opponent),own, opponent);
+        //move(canAnyStoneCapture(own, opponent),own, opponent);
 
         free(own);
         free(opponent);
