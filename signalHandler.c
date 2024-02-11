@@ -15,8 +15,8 @@ static struct Piece *pieces = NULL;
 
 
 int charToInt(char y){
-switch (y){
 int result;
+switch (y){
 case 'A':
 result= 1;
 break;
@@ -41,8 +41,9 @@ break;
 case 'H':
 result = 8;
 break;
-return result;
+
 }
+return result;
 }
 //
 void signalHandler(){
@@ -68,12 +69,12 @@ void signalHandler(){
         }
 
         if(sharedData->player.playerNum == 0){
-            int numberofOwnStones = whiteCount;
-            int numberOfOpponentStones = blackCount;
+            numberofOwnStones = whiteCount;
+            numberOfOpponentStones = blackCount;
         }
         else{
-            int numberofOwnStones = blackCount;
-            int numberOfOpponentStones = whiteCount;
+            numberofOwnStones = blackCount;
+            numberOfOpponentStones = whiteCount;
         }
 
         struct position *own =  malloc(sizeof(struct Piece) * numberofOwnStones);
