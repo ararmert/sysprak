@@ -146,7 +146,7 @@ while(1){
         kill(getppid(), SIGUSR1);
         printf("SIGUSR1 signal sent to parent.\n");
         printf("Start use sending Move From Pipe\n");
-        SendingMoveFromPipe(pipe_fds[0],socket_fd,readFile);
+        //SendingMoveFromPipe(pipe_fds[0],socket_fd,readFile);
         printf("Pipe finished\n");
 
 
