@@ -7,10 +7,11 @@
 #include <signal.h>
 #include "readLine.h"
 #include "board.h"
+#include "sendingMoveFromPipe.h"
 #define BUFFER 256
 
 
-void move_wait_over (int socket_fd,FILE* readFile,struct Piece* pieces){
+void move_wait_over (int socket_fd,FILE* readFile,struct Piece* pieces,int pipe_fds[0]){
 
     char spielstand[8][8]= {
         {'*', 'b', '*', 'b', '*', 'b', '*', 'b'},
@@ -144,6 +145,9 @@ while(1){
         printf("About to send SIGUSR1 signal to parent.\n");
         kill(getppid(), SIGUSR1);
         printf("SIGUSR1 signal sent to parent.\n");
+        printf("Start use sending Move From Pipe\n");
+        SendingMoveFromPipe(pipe_fds[0],socket_fd,readFile);
+        printf("Pipe finished\n");
 
 
         printf("end of move\n");          

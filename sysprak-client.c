@@ -313,9 +313,9 @@ int main(int argc, char* argv[]){
         exit(EXIT_FAILURE);
     }
 
-        move_wait_over(socket_fd,readFile,pieces);
+        move_wait_over(socket_fd,readFile,pieces,&pipe_fds[0]);
         
-        //SendingMoveFromPipe(pipe_fds[0],socket_fd);
+
 
         close(socket_fd);
        
