@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
+//#include <stdio.h>
+//#include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <sys/types.h>
@@ -24,7 +24,7 @@ void SendingMoveFromPipe(int pipe_read_fd, int server_socket_fd){
         strcat(player , buffer);
         //schreiben der pipe in Server
           ssize_t bytes_written = send(server_socket_fd, player, strlen(player),0);
-        //ssize_t bytes_written = write(server_socket_fd, buffer, bytes_read);
+      
         if (bytes_written <= 0) {
         
         printf("sending from pipe failed! /n");
@@ -34,9 +34,6 @@ void SendingMoveFromPipe(int pipe_read_fd, int server_socket_fd){
         {
            printf("incorrect Move was sent! /n");
         }
-        
-     
-
        close(server_socket_fd);
 }
 

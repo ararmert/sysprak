@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 // 定义棋盘上棋子的处理函数
-void CatchPieces(struct Piece *pieces, char spielstand[8][8]) {
+void savePiecesInSHM(struct Piece *pieces, char spielstand[8][8]) {
     int index = 0;
     for (int y = 0; y < 8; y++) {
         for (int x = 0; x < 8; x++) {

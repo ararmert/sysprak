@@ -58,9 +58,6 @@ bool canStoneCapture(struct Piece currentPlayer, struct Piece* opponent, struct 
     // für dunkle Spieler
     for(int i=0; i< size; i++){
 
-    //if (opponent[i].x < 0 || opponent[i].x >= BOARD_SIZE || opponent[i].y < 0 || opponent[i].y >= BOARD_SIZE) {
-    //    return false;
-    //}
         
     if(currentPlayer.color == "Black" && currentPlayer.x-1 == opponent[i].x){
         if(currentPlayer.y -1 == opponent[i].y){
@@ -93,47 +90,7 @@ bool canStoneCapture(struct Piece currentPlayer, struct Piece* opponent, struct 
     }
     }
 
-// für helle Spieler
-    /*for (int j = 0; j < size; j++){
 
-        if (opponent[j].x < 0 || opponent[j].x >= BOARD_SIZE || opponent[j].y < 0 || opponent[j].y >= BOARD_SIZE) {
-        return false;
-    }
-        
-    if(currentPlayer.Color == "White" && currentPlayer.x-1 == opponent[j].x){
-        if(currentPlayer.y -1 == opponent[j].y){
-            if(isFieldFree(currentPlayer.y-2, currentPlayer.x-2, opponent , spielerPosition )){
-
-
-           j--;     
-
-            }
-        }
-        if(currentPlayer.y +1 == opponent[j].y){
-            if(isFieldFree(currentPlayer.y+2, currentPlayer.x-2, opponent , spielerPosition )){
-
-            j--;
-            }  
-        }
-    } 
-
-    if(currentPlayer.Color == "White" && currentPlayer.x+1 == opponent[j].x){
-        if(currentPlayer.y -1 == opponent[j].y){
-            if(isFieldFree(currentPlayer.y-2, currentPlayer.x+2, opponent , spielerPosition )){
-
-            j--;
-            }
-        }
-        if(currentPlayer.y +1 == opponent[j].y){
-            if(isFieldFree(currentPlayer.y+2, currentPlayer.x+2, opponent , spielerPosition )){
-
-            j--;
-            } 
-        }
-    }
-    }*/
-                     
-    
     return false;
   }
 
@@ -279,9 +236,7 @@ bool canKingCapture(struct Piece currentPlayer, struct Piece* opponent, struct P
 
   }
 
-    /*int xDiff = abs(currentPlayer.x - opponent.x);
-    int colDiff = abs(currentPlayer.y - opponent.y);
-    return xDiff == colDiff;*/
+
 
 bool (*whatForStone(bool Dame, int playerColor))(struct Piece, struct Piece, int) {
     if (canKingCapture) {
@@ -290,22 +245,6 @@ bool (*whatForStone(bool Dame, int playerColor))(struct Piece, struct Piece, int
         return &canStoneCapture; 
     }
 }
-/*if(canKingCapture)
-{
-    return canAnyStoneCapture; //die frage ist soll ich hier die die Adresse der Funktion zurückgeben lassen oder die Funktion selbst?
-}*/
-
-/*bool whatForStone(istKeineDame){
-    if (istKeineDame == 1)
-    {
-       return canStoneCapture; 
-    }else
-    {
-        return canAnyStoneCapture;
-    }
-    
-    
-}*/
 
 // return zu strings stat true
 int* move(struct Piece currentPlayer, struct Piece* spielerPositionen, struct Piece* opponent){
@@ -430,9 +369,7 @@ int* positionToString(struct Piece currentPlayer){
         case 8:
             result[0] = 'H';
             break;
-       /* case 3:
-            result[0] = '';
-            break;*/                     
+                    
     }
     result[1]= currentPlayer.x;
 
@@ -472,65 +409,3 @@ int* recusviBlack(struct Piece currentPlayer, struct Piece* spielerPositionen, s
             }
             return "\n" ; //testen
 }
-
-     
-        
-
-
-
-       /* if ((currentPlayer.Color == "Black" && currentPlayer.x - 1 == opponent[i].x ) || ( currentPlayer.Color == "White" && currentPlayer.x + 1 == opponent.x)) {
-            
-            if (currentPlayer.y - 1 == opponent.y || currentPlayer.y + 1 == opponent.y) {
-                return true;
-            }
-        }*/
-
-
-/*..................................*/
-
-/*#include <stdbool.h>
-
-// Piece des Spielsteins
-struct Piece {
-    int x;
-    int y;
-};
-
-// Spielfeldgröße
-#define BOARD_SIZE 8
-
-// Spielbrett
-int** spielfeld;
-int* LEERES_FELD;
-
-// Methode zur Überprüfung, ob ein Stein einen anderen schlagen kann
-bool canStoneCapture(struct Piece currentPlayer, struct Piece opponent, int playerColor) {
-    // Hier wird geprüft, ob das Zielfeld sich auf dem Spielbrett befindet
-    if (opponent.x < 0 || opponent.x >= BOARD_SIZE || opponent.y < 0 || opponent.y >= BOARD_SIZE) {
-        return false;
-    }
-
-    // Überprüfe, ob das Zielfeld leer ist
-    if (spielfeld[opponent.x][opponent.y] == *LEERES_FELD) {
-        // Überprüfe, ob der Stein diagonal neben dem Gegner liegt, je nach Spielerfarbe
-        if ((playerColor == 'X' && currentPlayer.x - 1 == opponent.x) || (playerColor == 'O' && currentPlayer.x + 1 == opponent.x)) {
-            // Überprüfe, ob das Zielfeld diagonal hcharer dem Gegner liegt
-            if (currentPlayer.y - 1 == opponent.y || currentPlayer.y + 1 == opponent.y) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-// Methode, die für einen gegebenen Spieler überprüft, ob einer seiner Steine einen Gegner schlagen kann
-bool canAnyStoneCapture(struct Piece spielerPositionen[], int spielerAnzahl, struct Piece gegnerPosition, int playerColor) {
-    for (int i = 0; i < spielerAnzahl; ++i) {
-        if (canStoneCapture(spielerPositionen[i], gegnerPosition, playerColor)) {
-            return true;
-        }
-    }
-    return false;
-}*/
-

@@ -21,7 +21,7 @@ struct Piece{
 };
 
 // 声明处理棋盘和打印棋盘的函数
-void CatchPieces(struct Piece *pieces, char spielstand[8][8]);
+void savePiecesInSHM(struct Piece *pieces, char spielstand[8][8]);
 void PrintSavedSD(char spielstand[8][8]);
 void printPieces(struct Piece *pieces, int count);
 

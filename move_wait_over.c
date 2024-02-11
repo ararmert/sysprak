@@ -125,7 +125,7 @@ while(1){
         usleep(500000);
 
          // 存储棋子的数组
-        CatchPieces(pieces, spielstand); // 填充 pieces 数组
+        savePiecesInSHM(pieces, spielstand); // 填充 pieces 数组
         PrintSavedSD(spielstand); // 打印棋盘
         printPieces(pieces, 24); // 检查棋子信息
 
