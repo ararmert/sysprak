@@ -306,7 +306,7 @@ int main(int argc, char* argv[]){
 
         move_wait_over(socket_fd,readFile,pieces);
         
-        SendingMoveFromPipe(pipe_fds[0],socket_fd);
+        //SendingMoveFromPipe(pipe_fds[0],socket_fd);
 
         close(socket_fd);
        

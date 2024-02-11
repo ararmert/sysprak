@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #include <signal.h>
 //#include <shm.h> 
-#include <shared_data.h>
+#include "shared_data.h"
 #include "board.h"
 
 static struct SharedData *sharedData = NULL;
