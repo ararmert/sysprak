@@ -353,11 +353,11 @@ char* move(struct position currentPlayer, struct position* spielerPosition, stru
                 if(spielerPosition[i].color == white){
                     if(isFieldFree(spielerPosition[i].y +1, spielerPosition[i].x +1, opponent , spielerPosition , sizeopponent,  sizespielerPosition)){
                         struct position tmp= {.x = currentPlayer.x+1, .y =currentPlayer.y+1, .status=currentPlayer.status, .color= currentPlayer.color};
-                        return strcat(positionToString(currentPlayer), positionToString(tmp)); // mit strcat : an ersten String
+                        return strcat(strcat(postionToString(currentPlayer),":"), positionToString(tmp)); // mit strcat : an ersten String
                     }
                     if(isFieldFree(spielerPosition[i].y -1, spielerPosition[i].x +1, opponent , spielerPosition, sizeopponent,  sizespielerPosition )){
                         struct position tmp= {.x = currentPlayer.x+1, .y =currentPlayer.y-1, .status=currentPlayer.status, .color= currentPlayer.color};
-                        return strcat(positionToString(currentPlayer), positionToString(tmp));
+                        return strcat(strcat(postionToString(currentPlayer),":"), positionToString(tmp));
                     }
                 }
             }else{
