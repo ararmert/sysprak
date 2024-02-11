@@ -124,18 +124,20 @@ while(1){
         }
         usleep(500000);
 
-         // 存储棋子的数组
-        savePiecesInSHM(pieces, spielstand); // 填充 pieces 数组
-        PrintSavedSD(spielstand); // 打印棋盘
-        printPieces(pieces, 24); // 检查棋子信息
-
+         
  
         
         char* buffer_okthink = (char*)malloc(256 * sizeof(char));                                   
         readLine(buffer_okthink,readFile);
         printf("after send thinking, recive: %s.\n",buffer_okthink);
         free(buffer_okthink);
+
         // call save to SHM method;
+        savePiecesInSHM(pieces, spielstand); // 填充 pieces 数组
+        PrintSavedSD(spielstand); // 打印棋盘
+        printPieces(pieces, 24); // 检查棋子信息
+        
+
 
         printf("end of move\n");          
         continue;
