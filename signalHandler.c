@@ -126,14 +126,17 @@ void signalHandler(){
         }
 
         //call rihannas functions with numberofownstones and numberofopponentstones parameters
-        //canAnyStoneCapture();
-        //move();
+        
+        move(canAnyStoneCapture(own, opponent),own, opponent);
+
+        free(own);
+        free(opponent);
             
         }
 
        
 
-    //free(rihana)
+  
 
     }
 
