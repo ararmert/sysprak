@@ -18,7 +18,6 @@
 #include <sys/shm.h>
 #include <sys/ipc.h>
 #include <sys/types.h>
-#include "handler.h"
 #include "performConnection.h"
 #include "config.h"
 #include "shared_data.h"
@@ -40,7 +39,6 @@ struct config{
 
 int main(int argc, char* argv[]){
 
-    signal(SIGPIPE, handler);
     
     // init Game-id and Spielernummer
     char *gameID = (char*) malloc (sizeof(char)* 13); //to avoid avoid stack confusion
