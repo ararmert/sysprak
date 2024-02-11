@@ -47,7 +47,8 @@ for (int i = 0; i < sizespielerPosition; i++)
        return false;
     }
     
-}
+    }
+    return true;
 }
 
     
@@ -83,13 +84,17 @@ bool canStoneCapture(struct position currentPlayer, struct position* opponent, s
             if(isFieldFree(currentPlayer.y-2, currentPlayer.x+2, opponent , spielerPosition,  sizeopponent,  sizespielerPosition )){
 
             i--;
+              return true;
             }
+          
         }
         if(currentPlayer.y +1 == opponent[i].y){
             if(isFieldFree(currentPlayer.y+2, currentPlayer.x+2, opponent , spielerPosition,  sizeopponent,  sizespielerPosition )){
 
             i--;
+              return true;
             } 
+            
         }
     }
     }
@@ -144,8 +149,11 @@ bool canStoneCapture(struct position currentPlayer, struct position* opponent, s
 
 
 int obenRechtsHelper(struct position currentPlayer, struct position* opponent, struct position* spielerPosition, int sizeopponent, int sizespielerPosition){
-    int size = sizeof(opponent)/ sizeof(struct position);
-    for(int i=0; i< size; i++){
+   // int size = sizeof(opponent)/ sizeof(struct position);
+    for(int i=0; i< sizeopponent; i++){
+        if(currentPlayer.y+ i >= BOARD_SIZE || currentPlayer.x+ i >= BOARD_SIZE){
+            break;
+        } 
         if(currentPlayer.y+ i == opponent[i].y && currentPlayer.x+ i == opponent[i].x){
             if(isFieldFree(currentPlayer.y+i+1, currentPlayer.x+i+1, opponent , spielerPosition, sizeopponent, sizespielerPosition ))
                 return 1;
@@ -159,8 +167,11 @@ int obenRechtsHelper(struct position currentPlayer, struct position* opponent, s
     return -1;
 }
 int obenLinksHelper(struct position currentPlayer, struct position* opponent, struct position* spielerPosition, int sizeopponent, int sizespielerPosition){
-    int size = sizeof(opponent)/ sizeof(struct position);
-    for(int i=0; i< size; i++){
+   // int size = sizeof(opponent)/ sizeof(struct position);
+    for(int i=0; i< sizeopponent; i++){
+        if(currentPlayer.y+ i >= BOARD_SIZE || currentPlayer.x+ i >= BOARD_SIZE){
+            break;
+        } 
         if(currentPlayer.y- i == opponent[i].y && currentPlayer.x+ i == opponent[i].x){
             if(isFieldFree(currentPlayer.y-i-1, currentPlayer.x+i+1, opponent , spielerPosition, sizeopponent, sizespielerPosition ))
                 return 1;
@@ -175,8 +186,11 @@ int obenLinksHelper(struct position currentPlayer, struct position* opponent, st
 }
 
 int untenRechtsHelper(struct position currentPlayer, struct position* opponent, struct position* spielerPosition, int sizeopponent, int sizespielerPosition){
-    int size = sizeof(opponent)/ sizeof(struct position);
-    for(int i=0; i< size; i++){
+    //int size = sizeof(opponent)/ sizeof(struct position);
+    for(int i=0; i< sizeopponent; i++){
+        if(currentPlayer.y+ i >= BOARD_SIZE || currentPlayer.x+ i >= BOARD_SIZE){
+            break;
+        } 
         if(currentPlayer.y+ i == opponent[i].y && currentPlayer.x- i == opponent[i].x){
             if(isFieldFree(currentPlayer.y+i+1, currentPlayer.x-i-1, opponent , spielerPosition, sizeopponent, sizespielerPosition ))
                 return 1;
@@ -191,8 +205,12 @@ int untenRechtsHelper(struct position currentPlayer, struct position* opponent, 
 }
 
 int untenLinkssHelper(struct position currentPlayer, struct position* opponent, struct position* spielerPosition, int sizeopponent,int sizespielerPosition){
-    int size = sizeof(opponent)/ sizeof(struct position);
-    for(int i=0; i< size; i++){
+    //int size = sizeof(opponent)/ sizeof(struct position);
+     
+    for(int i=0; i< sizeopponent; i++){
+        if(currentPlayer.y+ i >= BOARD_SIZE || currentPlayer.x+ i >= BOARD_SIZE){
+            break;
+        }  
         if(currentPlayer.y- i == opponent[i].y && currentPlayer.x- i == opponent[i].x){
             if(isFieldFree(currentPlayer.y-i-1, currentPlayer.x-i-1, opponent , spielerPosition, sizeopponent, sizespielerPosition ))
                 return 1;
@@ -268,8 +286,8 @@ bool canKingCapture(struct position currentPlayer, struct position* opponent, st
   }
 
   struct position canAnyStoneCapture(struct position* spielerPosition, struct position* opponnent, int sizeopponent, int sizespielerPosition) {
-    int eigeneSteine = sizeof(spielerPosition)/ sizeof(struct position);
-    for (int i = 0; i < eigeneSteine; ++i) {
+    //int eigeneSteine = sizeof(spielerPosition)/ sizeof(struct position);
+    for (int i = 0; i < sizespielerPosition; ++i) {
         if (spielerPosition[i].status && canKingCapture(spielerPosition[i], opponnent, spielerPosition, sizeopponent, sizespielerPosition )){
             return spielerPosition[i];
             
@@ -314,9 +332,9 @@ bool (*whatForStone(bool Dame, int playercolor))(struct position, struct positio
 char* move(struct position currentPlayer, struct position* spielerPosition, struct position* opponent, int sizeopponent, int sizespielerPosition){
     int result [256]= '/0';
     if(currentPlayer.y == 0 && currentPlayer.x == 0){
-        int eigeneSteine = sizeof(spielerPosition)/ sizeof(struct position);
+        //int eigeneSteine = sizeof(spielerPosition)/ sizeof(struct position);
 
-        for (int i = 0; i < eigeneSteine; ++i) {
+        for (int i = 0; i < sizespielerPosition; ++i) {
             if(!spielerPosition[i].status == QUEEN){
                 if(spielerPosition[i].color == black){
                     if(isFieldFree(spielerPosition[i].y +1, spielerPosition[i].x -1, opponent , spielerPosition, sizeopponent, sizespielerPosition )){
@@ -375,13 +393,15 @@ char* move(struct position currentPlayer, struct position* spielerPosition, stru
                 if(currentPlayer.color == black && currentPlayer.x-1 == opponent[i].x){
                     if(currentPlayer.y -1 == opponent[i].y){
                         if(isFieldFree(currentPlayer.y-2, currentPlayer.x-2, opponent , spielerPosition, sizeopponent, sizespielerPosition )){
-                           
+                            struct position tmp= {.x = currentPlayer.x-2, .y =currentPlayer.y-2, .status=currentPlayer.status, .color= currentPlayer.color};
+                        return strcat(positionToString(currentPlayer), positionToString(tmp));
 
                         }
                     }
                     if(currentPlayer.y +1 == opponent[i].y){
                         if(isFieldFree(currentPlayer.y+2, currentPlayer.x-2, opponent , spielerPosition, sizeopponent, sizespielerPosition )){
-                            return true;
+                             struct position tmp= {.x = currentPlayer.x-2, .y =currentPlayer.y+2, .status=currentPlayer.status, .color= currentPlayer.color};
+                        return strcat(positionToString(currentPlayer), positionToString(tmp));
                         }  
                     }
                 }
@@ -393,13 +413,15 @@ char* move(struct position currentPlayer, struct position* spielerPosition, stru
                 if(currentPlayer.color == white && currentPlayer.x+1 == opponent[i].x){
                     if(currentPlayer.y -1 == opponent[i].y){
                         if(isFieldFree(currentPlayer.y-2, currentPlayer.x+2, opponent , spielerPosition,sizeopponent, sizespielerPosition )){
-                            return true;  
+                             struct position tmp= {.x = currentPlayer.x+2, .y =currentPlayer.y-2, .status=currentPlayer.status, .color= currentPlayer.color};
+                        return strcat(positionToString(currentPlayer), positionToString(tmp));
 
                         }
                     }
                     if(currentPlayer.y +1 == opponent[i].y){
                         if(isFieldFree(currentPlayer.y+2, currentPlayer.x+2, opponent , spielerPosition, sizeopponent, sizespielerPosition )){
-                            return true;
+                             struct position tmp= {.x = currentPlayer.x+2, .y =currentPlayer.y+2, .status=currentPlayer.status, .color= currentPlayer.color};
+                        return strcat(positionToString(currentPlayer), positionToString(tmp));
                         }  
                     }
                 } 
