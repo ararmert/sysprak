@@ -48,7 +48,7 @@ return result;
 //
 void signalHandler(){
     if(sharedData->shouldThink == true){
-        sharedData->shouldThink == false;
+        sharedData->shouldThink = false;
         int i = 0;
         int blackCount = 0;
         int whiteCount = 0;
