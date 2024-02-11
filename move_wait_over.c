@@ -4,6 +4,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <signal.h>
 #include "readLine.h"
 #include "board.h"
 #define BUFFER 256
@@ -124,7 +125,9 @@ while(1){
         }
         usleep(500000);
 
-         
+         // 存储棋子的数组
+       
+
  
         
         char* buffer_okthink = (char*)malloc(256 * sizeof(char));                                   
@@ -133,10 +136,14 @@ while(1){
         free(buffer_okthink);
 
         // call save to SHM method;
-        savePiecesInSHM(pieces, spielstand); // 填充 pieces 数组
+        CatchPieces(pieces, spielstand); // 填充 pieces 数组
         PrintSavedSD(spielstand); // 打印棋盘
         printPieces(pieces, 24); // 检查棋子信息
-        
+
+        // 发送信号给 Thinker 进程
+        printf("About to send SIGUSR1 signal to parent.\n");
+        kill(getppid(), SIGUSR1);
+        printf("SIGUSR1 signal sent to parent.\n");
 
 
         printf("end of move\n");          

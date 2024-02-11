@@ -24,7 +24,8 @@
 #include "shared_data.h"
 #include "move_wait_over.h"
 #include "board.h"
-#include "sendingMoveFromPipe.h"
+// #include "sendingMoveFromPipe.h"
+// #include "signalHandler.h"
 
 
 #define BUFFER 256
@@ -191,6 +192,12 @@ int main(int argc, char* argv[]){
         //wait for childprocess
         close(pipe_fds[0]);
 
+        // 设置信号处理函数
+        //signal(SIGUSR1, signalHandler);
+        // 启动 start 函数
+       // start(pid, pipe_fds, shm_id, SHMSpielstand);
+
+
         //TO-DO
 
         pid = waitpid(pid, NULL, 0);
@@ -291,10 +298,14 @@ int main(int argc, char* argv[]){
 
         // //Flag shouldThink !!!!Temporarilly in Notes, cuz if not it can not work
         // // 设置 shouldThink 标志
-        // sharedData->shouldThink = true;
+        //sharedData->shouldThink = true;
 
         // // 发送信号给 Thinker 进程
-        // kill(sharedData->thinkerPID, SIGUSR1);
+        //kill(sharedData->thinkerPID, SIGUSR1);
+        // 发送信号给 Thinker 进程
+    // printf("About to send SIGUSR1 signal to parent.\n");
+    // kill(getppid(), SIGUSR1);
+    // printf("SIGUSR1 signal sent to parent.\n");
 
 
         //SHM at in Childprocess

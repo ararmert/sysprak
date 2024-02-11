@@ -1,6 +1,8 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include <stdbool.h>
+
 // 定义棋子状态和颜色的枚举
 enum Status{
     SOLDIER,
@@ -18,10 +20,11 @@ struct Piece{
     enum Status status;
     char x;
     int y;
+    bool exist;
 };
 
 // 声明处理棋盘和打印棋盘的函数
-void savePiecesInSHM(struct Piece *pieces, char spielstand[8][8]);
+void CatchPieces(struct Piece *pieces, char spielstand[8][8]);
 void PrintSavedSD(char spielstand[8][8]);
 void printPieces(struct Piece *pieces, int count);
 
