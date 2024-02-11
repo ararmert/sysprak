@@ -1,45 +1,45 @@
 #include <stdbool.h>
 #include "board.h"
+#include "thinker.h"
 
 
-struct Piece {
+/*struct position {
     int x;
     int y; 
-    enum Color color;
+    enum color color;
     enum Status status;
 
-    bool isKing; // zum Überprüfen ob der stein ein damestein ist!
-    //int* Color;
+    bool status; // zum Überprüfen ob der stein ein damestein ist!
+    //int* color;
 
-};
-enum Color{
+};*/
+/*enum Color{
     black, 
     white
 };
 enum Status{
     SOLDIER,
     QUEEN
-};
-
+};*/
 
 #define BOARD_SIZE 8
 
 int** spielfeld;
 int* LEERES_FELD;
 
-void split(struct Piece*, struct Piece** opponent, struct Piece** own);
+void split(struct position*, struct position** opponent, struct position** own);
 
 
-bool isFieldFree(int y, int x, struct Piece* opponent, struct Piece* spielerPosition, int sizeOpponent, int sizespielerPosition){
-    //int size = sizeof(opponent)/ sizeof(struct Piece);
-for (int i = 0; i < sizeOpponent; i++){
+bool isFieldFree(int y, int x, struct Piece* opponent, struct Piece* spielerPosition, int sizeopponent, int sizespielerPosition){
+   // int size = sizeof(opponent)/ sizeof(struct position);
+for (int i = 0; i < sizeopponent; i++){
 
    if ( y == opponent[i].y && x == opponent[i].x)
    {
     return false;
    }
 }
-    //size= sizeof(spielerPosition)/ sizeof(struct Piece);
+    //size= sizeof(spielerPosition)/ sizeof(struct position);
 for (int i = 0; i < sizespielerPosition; i++)
 {
     if (y == spielerPosition[i].y && x == spielerPosition[i].x)
@@ -52,41 +52,41 @@ for (int i = 0; i < sizespielerPosition; i++)
 
     
 // Methode3.1 prüft ob einer stein einen anderen schlagen kann
-bool canStoneCapture(struct Piece currentPlayer, struct Piece* opponent, struct Piece* spielerPosition, struct Piece* Color) {
+bool canStoneCapture(struct position currentPlayer, struct position* opponent, struct position* spielerPosition, int sizeopponent, int sizespielerPosition ) {
     // zielfeld aufm spielbrett?
-    int size = sizeof(opponent)/ sizeof(struct Piece);
+    //int size = sizeof(opponent)/ sizeof(struct position);
 
     // für dunkle Spieler
-    for(int i=0; i< size; i++){
+    for(int i=0; i< sizeopponent; i++){
 
     //if (opponent[i].x < 0 || opponent[i].x >= BOARD_SIZE || opponent[i].y < 0 || opponent[i].y >= BOARD_SIZE) {
     //    return false;
     //}
         
-    if(currentPlayer.color == "Black" && currentPlayer.x-1 == opponent[i].x){
+    if(currentPlayer.color == black && currentPlayer.x-1 == opponent[i].x){
         if(currentPlayer.y -1 == opponent[i].y){
-            if(isFieldFree(currentPlayer.y-2, currentPlayer.x-2, opponent , spielerPosition, sizeOpponent, sizespielerPosition)){
+            if(isFieldFree(currentPlayer.y-2, currentPlayer.x-2, opponent , spielerPosition,  sizeopponent, sizespielerPosition )){
                 return true;  
 
             }
         }
         if(currentPlayer.y +1 == opponent[i].y){
-            if(isFieldFree(currentPlayer.y+2, currentPlayer.x-2, opponent , spielerPosition, sizeOpponent, sizespielerPosition)){
+            if(isFieldFree(currentPlayer.y+2, currentPlayer.x-2, opponent , spielerPosition , sizeopponent,  sizespielerPosition)){
                 return true;
 
             }  
         }
     } 
 
-    if(currentPlayer.color == "White" && currentPlayer.x+1 == opponent[i].x){
+    if(currentPlayer.color == white && currentPlayer.x+1 == opponent[i].x){
         if(currentPlayer.y -1 == opponent[i].y){
-            if(isFieldFree(currentPlayer.y-2, currentPlayer.x+2, opponent , spielerPosition )){
+            if(isFieldFree(currentPlayer.y-2, currentPlayer.x+2, opponent , spielerPosition,  sizeopponent,  sizespielerPosition )){
 
             i--;
             }
         }
         if(currentPlayer.y +1 == opponent[i].y){
-            if(isFieldFree(currentPlayer.y+2, currentPlayer.x+2, opponent , spielerPosition )){
+            if(isFieldFree(currentPlayer.y+2, currentPlayer.x+2, opponent , spielerPosition,  sizeopponent,  sizespielerPosition )){
 
             i--;
             } 
@@ -101,7 +101,7 @@ bool canStoneCapture(struct Piece currentPlayer, struct Piece* opponent, struct 
         return false;
     }
         
-    if(currentPlayer.Color == "White" && currentPlayer.x-1 == opponent[j].x){
+    if(currentPlayer.color == white && currentPlayer.x-1 == opponent[j].x){
         if(currentPlayer.y -1 == opponent[j].y){
             if(isFieldFree(currentPlayer.y-2, currentPlayer.x-2, opponent , spielerPosition )){
 
@@ -118,7 +118,7 @@ bool canStoneCapture(struct Piece currentPlayer, struct Piece* opponent, struct 
         }
     } 
 
-    if(currentPlayer.Color == "White" && currentPlayer.x+1 == opponent[j].x){
+    if(currentPlayer.color == white && currentPlayer.x+1 == opponent[j].x){
         if(currentPlayer.y -1 == opponent[j].y){
             if(isFieldFree(currentPlayer.y-2, currentPlayer.x+2, opponent , spielerPosition )){
 
@@ -141,78 +141,65 @@ bool canStoneCapture(struct Piece currentPlayer, struct Piece* opponent, struct 
    
 // Methode 3.2 && 3.3
 //einer der Steine einen Gegner schlagen kann?
-struct Piece canAnyStoneCapture(struct Piece* spielerPositionen, struct Piece* gegnerPosition) {
-    int eigeneSteine = sizeof(spielerPositionen)/ sizeof(struct Piece);
-    for (int i = 0; i < eigeneSteine; ++i) {
-        if (spielerPositionen[i].isKing && canKingCapture(spielerPositionen[i], gegnerPosition)){
-            return spielerPositionen[i];
-            
-        }
-        else if(canStoneCapture(spielerPositionen[i], gegnerPosition)) {
-            return spielerPositionen[i];
-        }
-    }
-    struct Piece tmp= {.x =0 , .y =0, .isKing=0};
-    return tmp;
-}
 
-int obenRechtsHelper(struct Piece currentPlayer, struct Piece* opponent, struct Piece* spielerPosition){
-    int size = sizeof(opponent)/ sizeof(struct Piece);
+
+int obenRechtsHelper(struct position currentPlayer, struct position* opponent, struct position* spielerPosition, int sizeopponent, int sizespielerPosition){
+    int size = sizeof(opponent)/ sizeof(struct position);
     for(int i=0; i< size; i++){
         if(currentPlayer.y+ i == opponent[i].y && currentPlayer.x+ i == opponent[i].x){
-            if(isFieldFree(currentPlayer.y+i+1, currentPlayer.x+i+1, opponent , spielerPosition ))
+            if(isFieldFree(currentPlayer.y+i+1, currentPlayer.x+i+1, opponent , spielerPosition, sizeopponent, sizespielerPosition ))
                 return 1;
             return 0;
         }
         // checkt ob auf nächstem Feld ein Freund liegt
-        if(!isFieldFree(currentPlayer.y+ i, currentPlayer.x+i, opponent , spielerPosition)){
+        if(!isFieldFree(currentPlayer.y+ i, currentPlayer.x+i, opponent , spielerPosition, sizeopponent, sizespielerPosition)){
             return 0;
         }
     }
     return -1;
 }
-int obenLinksHelper(struct Piece currentPlayer, struct Piece* opponent, struct Piece* spielerPosition){
-    int size = sizeof(opponent)/ sizeof(struct Piece);
+int obenLinksHelper(struct position currentPlayer, struct position* opponent, struct position* spielerPosition, int sizeopponent, int sizespielerPosition){
+    int size = sizeof(opponent)/ sizeof(struct position);
     for(int i=0; i< size; i++){
         if(currentPlayer.y- i == opponent[i].y && currentPlayer.x+ i == opponent[i].x){
-            if(isFieldFree(currentPlayer.y-i-1, currentPlayer.x+i+1, opponent , spielerPosition ))
+            if(isFieldFree(currentPlayer.y-i-1, currentPlayer.x+i+1, opponent , spielerPosition, sizeopponent, sizespielerPosition ))
                 return 1;
             return 0;
         }
         // checkt ob auf nächstem Feld ein Freund liegt
-        if(!isFieldFree(currentPlayer.y- i, currentPlayer.x+i, opponent , spielerPosition)){
+        if(!isFieldFree(currentPlayer.y- i, currentPlayer.x+i, opponent , spielerPosition, sizeopponent, sizespielerPosition)){
             return 0;
         }
     }
     return -1;
 }
 
-int untenRechtsHelper(struct Piece currentPlayer, struct Piece* opponent, struct Piece* spielerPosition){
-    int size = sizeof(opponent)/ sizeof(struct Piece);
+int untenRechtsHelper(struct position currentPlayer, struct position* opponent, struct position* spielerPosition, int sizeopponent, int sizespielerPosition){
+    int size = sizeof(opponent)/ sizeof(struct position);
     for(int i=0; i< size; i++){
         if(currentPlayer.y+ i == opponent[i].y && currentPlayer.x- i == opponent[i].x){
-            if(isFieldFree(currentPlayer.y+i+1, currentPlayer.x-i-1, opponent , spielerPosition ))
+            if(isFieldFree(currentPlayer.y+i+1, currentPlayer.x-i-1, opponent , spielerPosition, sizeopponent, sizespielerPosition ))
                 return 1;
             return 0;
         }
         // checkt ob auf nächstem Feld ein Freund liegt
-        if(!isFieldFree(currentPlayer.y+ i, currentPlayer.x-i, opponent , spielerPosition)){
+        if(!isFieldFree(currentPlayer.y+ i, currentPlayer.x-i, opponent , spielerPosition, sizeopponent, sizespielerPosition)){
             return 0;
         }
     }
     return -1;
 }
 
-int untenLinkssHelper(struct Piece currentPlayer, struct Piece* opponent, struct Piece* spielerPosition){
-    int size = sizeof(opponent)/ sizeof(struct Piece);
+int untenLinkssHelper(struct position currentPlayer, struct position* opponent, struct position* spielerPosition, int sizeopponent,int sizespielerPosition){
+    int size = sizeof(opponent)/ sizeof(struct position);
     for(int i=0; i< size; i++){
         if(currentPlayer.y- i == opponent[i].y && currentPlayer.x- i == opponent[i].x){
-            if(isFieldFree(currentPlayer.y-i-1, currentPlayer.x-i-1, opponent , spielerPosition ))
+            if(isFieldFree(currentPlayer.y-i-1, currentPlayer.x-i-1, opponent , spielerPosition, sizeopponent, sizespielerPosition ))
                 return 1;
             return 0;
         }
         // checkt ob auf nächstem Feld ein Freund liegt
-        if(!isFieldFree(currentPlayer.y- i, currentPlayer.x-i, opponent , spielerPosition)){
+        if(!isFieldFree(currentPlayer.y- i, currentPlayer.x-i, opponent , spielerPosition, sizeopponent, sizespielerPosition)){
             return 0;
         }
     }
@@ -221,15 +208,15 @@ int untenLinkssHelper(struct Piece currentPlayer, struct Piece* opponent, struct
 
 // Methode 3.3 && 3.4
 // Def:ob ein stein Dame ist bzw. ein damenstein schlagen kann! -> wenn die Zeilen- und Spaltenunterschiede gleich sind
-bool canKingCapture(struct Piece currentPlayer, struct Piece* opponent, struct Piece* spielerPosition) {
-    int size = sizeof(opponent)/ sizeof(struct Piece);
+bool canKingCapture(struct position currentPlayer, struct position* opponent, struct position* spielerPosition, int sizeopponent, int sizespielerPosition) {
+    int size = sizeof(opponent)/ sizeof(struct position);
 
     int i= 0;
     while(true){
         if(currentPlayer.y+ i >= BOARD_SIZE || currentPlayer.x+ i >= BOARD_SIZE){
             break;
         }  
-        int tmp= obenRechtsHelper(currentPlayer, opponent, spielerPosition);
+        int tmp= obenRechtsHelper(currentPlayer, opponent, spielerPosition, sizeopponent, sizespielerPosition);
         if(tmp == 1)
             return true;
         else if(tmp == 0);
@@ -241,7 +228,7 @@ bool canKingCapture(struct Piece currentPlayer, struct Piece* opponent, struct P
         if(currentPlayer.y- i >= BOARD_SIZE || currentPlayer.x+ i >= BOARD_SIZE){
             break;
         }  
-        int tmp= obenlinksHelper(currentPlayer, opponent, spielerPosition);
+        int tmp= obenlinksHelper(currentPlayer, opponent, spielerPosition, sizeopponent, sizespielerPosition);
         if(tmp == 1)
             return true;
         else if(tmp == 0);
@@ -253,7 +240,7 @@ bool canKingCapture(struct Piece currentPlayer, struct Piece* opponent, struct P
         if(currentPlayer.y+ i >= BOARD_SIZE || currentPlayer.x- i >= BOARD_SIZE){
             break;
         }  
-        int tmp= untenRechtsHelper(currentPlayer, opponent, spielerPosition);
+        int tmp= untenRechtsHelper(currentPlayer, opponent, spielerPosition, sizeopponent, sizespielerPosition);
         if(tmp == 1)
             return true;
         else if(tmp == 0);
@@ -265,7 +252,7 @@ bool canKingCapture(struct Piece currentPlayer, struct Piece* opponent, struct P
         if(currentPlayer.y- i >= BOARD_SIZE || currentPlayer.x- i >= BOARD_SIZE){
             break;
         }  
-        int tmp= untenLinkssHelper(currentPlayer, opponent, spielerPosition);
+        int tmp= untenLinkssHelper(currentPlayer, opponent, spielerPosition, sizeopponent, sizespielerPosition);
         if(tmp == 1)
             return true;
         else if(tmp == 0);
@@ -280,11 +267,26 @@ bool canKingCapture(struct Piece currentPlayer, struct Piece* opponent, struct P
 
   }
 
+  struct position canAnyStoneCapture(struct position* spielerPosition, struct position* opponnent, int sizeopponent, int sizespielerPosition) {
+    int eigeneSteine = sizeof(spielerPosition)/ sizeof(struct position);
+    for (int i = 0; i < eigeneSteine; ++i) {
+        if (spielerPosition[i].status && canKingCapture(spielerPosition[i], opponnent, spielerPosition, sizeopponent, sizespielerPosition )){
+            return spielerPosition[i];
+            
+        }
+        else if(canStoneCapture(spielerPosition[i], opponnent, spielerPosition ,sizeopponent, sizespielerPosition )) {
+            return spielerPosition[i];
+        }
+    }
+    struct position tmp= {.x =0 , .y =0, .status=0};
+    return tmp;
+}
+
     /*int xDiff = abs(currentPlayer.x - opponent.x);
     int colDiff = abs(currentPlayer.y - opponent.y);
     return xDiff == colDiff;*/
 
-bool (*whatForStone(bool Dame, int playerColor))(struct Piece, struct Piece, int) {
+bool (*whatForStone(bool Dame, int playercolor))(struct position, struct position, int) {
     if (canKingCapture) {
         return &canAnyStoneCapture; // die frage ist soll ich hier die die Adresse der Funktion zurückgeben lassen oder die Funktion selbst?
     } else {
@@ -309,50 +311,56 @@ bool (*whatForStone(bool Dame, int playerColor))(struct Piece, struct Piece, int
 }*/
 
 // return zu strings stat true
-int* move(struct Piece currentPlayer, struct Piece* spielerPositionen, struct Piece* opponent){
+char* move(struct position currentPlayer, struct position* spielerPosition, struct position* opponent, int sizeopponent, int sizespielerPosition){
     int result [256]= '/0';
     if(currentPlayer.y == 0 && currentPlayer.x == 0){
-        int eigeneSteine = sizeof(spielerPositionen)/ sizeof(struct Piece);
+        int eigeneSteine = sizeof(spielerPosition)/ sizeof(struct position);
 
         for (int i = 0; i < eigeneSteine; ++i) {
-            if(!spielerPositionen[i].isKing){
-                if(spielerPositionen[i].color == "Black"){
-                    if(isFieldFree(spielerPositionen[i].y +1, spielerPositionen[i].x -1, opponent , spielerPositionen )){
-                        struct Piece tmp= {.x = currentPlayer.x+1, .y =currentPlayer.y-1, .isKing=currentPlayer.isKing, .color= currentPlayer.Color};
+            if(!spielerPosition[i].status == QUEEN){
+                if(spielerPosition[i].color == black){
+                    if(isFieldFree(spielerPosition[i].y +1, spielerPosition[i].x -1, opponent , spielerPosition, sizeopponent, sizespielerPosition )){
+                        struct position tmp= {.x = currentPlayer.x-1, .y =currentPlayer.y+1, .status=currentPlayer.status, .color= currentPlayer.color};
                         return strcat(positionToString(currentPlayer), positionToString(tmp)); // mit strcat : an ersten String
                     }
-                    if(isFieldFree(spielerPositionen[i].y -1, spielerPositionen[i].x -1, opponent , spielerPositionen )){
-                        return true;
+                    if(isFieldFree(spielerPosition[i].y -1, spielerPosition[i].x -1, opponent , spielerPosition, sizeopponent,  sizespielerPosition )){
+                        struct position tmp= {.x = currentPlayer.x-1, .y =currentPlayer.y-1, .status=currentPlayer.status, .color= currentPlayer.color};
+                        return strcat(positionToString(currentPlayer), positionToString(tmp));
                     }
                 }
 
                 //selbe für white
 
 
-                if(spielerPositionen[i].color == "White"){
-                    if(isFieldFree(spielerPositionen[i].y +1, spielerPositionen[i].x +1, opponent , spielerPositionen )){
-                        struct Piece tmp= {.x = currentPlayer.x-1, .y =currentPlayer.y-1, .isKing=currentPlayer.isKing, .color= currentPlayer.Color};
+                if(spielerPosition[i].color == white){
+                    if(isFieldFree(spielerPosition[i].y +1, spielerPosition[i].x +1, opponent , spielerPosition , sizeopponent,  sizespielerPosition)){
+                        struct position tmp= {.x = currentPlayer.x+1, .y =currentPlayer.y+1, .status=currentPlayer.status, .color= currentPlayer.color};
                         return strcat(positionToString(currentPlayer), positionToString(tmp)); // mit strcat : an ersten String
                     }
-                    if(isFieldFree(spielerPositionen[i].y -1, spielerPositionen[i].x +1, opponent , spielerPositionen )){
-                        return true;
+                    if(isFieldFree(spielerPosition[i].y -1, spielerPosition[i].x +1, opponent , spielerPosition, sizeopponent,  sizespielerPosition )){
+                        struct position tmp= {.x = currentPlayer.x+1, .y =currentPlayer.y-1, .status=currentPlayer.status, .color= currentPlayer.color};
+                        return strcat(positionToString(currentPlayer), positionToString(tmp));
                     }
                 }
             }else{
-                if(isFieldFree(currentPlayer.y+1, currentPlayer.x+1, opponent , spielerPositionen )){
-                    return true;
+                if(isFieldFree(currentPlayer.y+1, currentPlayer.x+1, opponent , spielerPosition, sizeopponent,  sizespielerPosition )){
+                    struct position tmp= {.x = currentPlayer.x+1, .y =currentPlayer.y+1, .status=currentPlayer.status, .color= currentPlayer.color};
+                        return strcat(positionToString(currentPlayer), positionToString(tmp));
                 }
 
-                if(isFieldFree(currentPlayer.y-1, currentPlayer.x+1, opponent , spielerPositionen )){
-                    return true;
+                if(isFieldFree(currentPlayer.y-1, currentPlayer.x+1, opponent , spielerPosition, sizeopponent,  sizespielerPosition )){
+                    struct position tmp= {.x = currentPlayer.x+1, .y =currentPlayer.y-1, .status=currentPlayer.status, .color= currentPlayer.color};
+                        return strcat(positionToString(currentPlayer), positionToString(tmp));
                 }
 
-                if(isFieldFree(currentPlayer.y+1, currentPlayer.x-1, opponent , spielerPositionen )){
-                    return true;
+                if(isFieldFree(currentPlayer.y+1, currentPlayer.x-1, opponent , spielerPosition , sizeopponent,  sizespielerPosition)){
+                    struct position tmp= {.x = currentPlayer.x-1, .y =currentPlayer.y+1, .status=currentPlayer.status, .color= currentPlayer.color};
+                        return strcat(positionToString(currentPlayer), positionToString(tmp));
                 }
 
-                if(isFieldFree(currentPlayer.y-1, currentPlayer.x-1, opponent , spielerPositionen )){
-                    return true;
+                if(isFieldFree(currentPlayer.y-1, currentPlayer.x-1, opponent , spielerPosition , sizeopponent,  sizespielerPosition)){
+                    struct position tmp= {.x = currentPlayer.x-1, .y =currentPlayer.y-1, .status=currentPlayer.status, .color= currentPlayer.color};
+                        return strcat(positionToString(currentPlayer), positionToString(tmp));
                 }
 
                 // selbe 4 für Richtungen
@@ -361,36 +369,36 @@ int* move(struct Piece currentPlayer, struct Piece* spielerPositionen, struct Pi
     }
     else{
         result == positionToString(currentPlayer);
-        if(!currentPlayer.isKing){
-            int size = sizeof(opponent)/ sizeof(struct Piece);
-            for(int i=0; i< size;++i){
-                if(currentPlayer.color == "Black" && currentPlayer.x-1 == opponent[i].x){
+        if(!currentPlayer.status){
+            //int size = sizeof(opponent)/ sizeof(struct position);
+            for(int i=0; i< sizeopponent;++i){
+                if(currentPlayer.color == black && currentPlayer.x-1 == opponent[i].x){
                     if(currentPlayer.y -1 == opponent[i].y){
-                        if(isFieldFree(currentPlayer.y-2, currentPlayer.x-2, opponent , spielerPositionen )){
-                            return true;  
+                        if(isFieldFree(currentPlayer.y-2, currentPlayer.x-2, opponent , spielerPosition, sizeopponent, sizespielerPosition )){
+                           
 
                         }
                     }
                     if(currentPlayer.y +1 == opponent[i].y){
-                        if(isFieldFree(currentPlayer.y+2, currentPlayer.x-2, opponent , spielerPositionen )){
+                        if(isFieldFree(currentPlayer.y+2, currentPlayer.x-2, opponent , spielerPosition, sizeopponent, sizespielerPosition )){
                             return true;
                         }  
                     }
-                } 
+                }
             }
 
             // selbe für Weiß
 
-            for(int i=0; i< size;++i){
-                if(currentPlayer.color == "White" && currentPlayer.x+1 == opponent[i].x){
+            for(int i=0; i< sizeopponent;++i){
+                if(currentPlayer.color == white && currentPlayer.x+1 == opponent[i].x){
                     if(currentPlayer.y -1 == opponent[i].y){
-                        if(isFieldFree(currentPlayer.y-2, currentPlayer.x+2, opponent , spielerPositionen )){
+                        if(isFieldFree(currentPlayer.y-2, currentPlayer.x+2, opponent , spielerPosition,sizeopponent, sizespielerPosition )){
                             return true;  
 
                         }
                     }
                     if(currentPlayer.y +1 == opponent[i].y){
-                        if(isFieldFree(currentPlayer.y+2, currentPlayer.x+2, opponent , spielerPositionen )){
+                        if(isFieldFree(currentPlayer.y+2, currentPlayer.x+2, opponent , spielerPosition, sizeopponent, sizespielerPosition )){
                             return true;
                         }  
                     }
@@ -403,9 +411,9 @@ int* move(struct Piece currentPlayer, struct Piece* spielerPositionen, struct Pi
     }
 }
 
-int* positionToString(struct Piece currentPlayer){
+char* positionToString(struct position currentPlayer){
     int y= currentPlayer.y;
-    int result [2]= '/0';
+    char result [2]= '/0';
     switch (y){
         case 1:
             result[0]= 'A';
@@ -440,33 +448,35 @@ int* positionToString(struct Piece currentPlayer){
     return result;
 }
 
-int* recusviBlack(struct Piece currentPlayer, struct Piece* spielerPositionen, struct Piece* opponent){
-                int size = sizeof(opponent)/ sizeof(struct Piece);
-            for(int i=0; i< size;++i){
-                if(currentPlayer.color == "Black" && currentPlayer.x-1 == opponent[i].x){
+int* recusviBlack(struct position currentPlayer, struct position* spielerPosition, struct position* opponent, int sizeopponent, int sizespielerPosition){
+                //int size = sizeof(opponent)/ sizeof(struct position);
+            for(int i=0; i< sizeopponent;++i){
+                if(currentPlayer.color == black && currentPlayer.x-1 == opponent[i].x){
                     if(currentPlayer.y -1 == opponent[i].y){
-                        if(isFieldFree(currentPlayer.y-2, currentPlayer.x-2, opponent , spielerPositionen )){
-                            struct Piece tmp= {.x = currentPlayer.x-2, .y =currentPlayer.y-2, .isKing=currentPlayer.isKing, .color= currentPlayer.color};
-                            return strcat(strcat(postionToString(currentPlayer), ":"), recusviBlack(tmp, spielerPositionen, opponent));
+                        if(isFieldFree(currentPlayer.y-2, currentPlayer.x-2, opponent , spielerPosition,  sizeopponent,  sizespielerPosition )){
+                            struct position tmp= {.x = currentPlayer.x-2, .y =currentPlayer.y-2, .status=currentPlayer.status, .color= currentPlayer.color};
+                            return strcat(strcat(postionToString(currentPlayer), ":"), recusviBlack(tmp, spielerPosition, opponent,  sizeopponent,  sizespielerPosition));
                         }
                     }
                     if(currentPlayer.y +1 == opponent[i].y){
-                        if(isFieldFree(currentPlayer.y+2, currentPlayer.x-2, opponent , spielerPositionen )){
-                            return true; // replace see open
+                        if(isFieldFree(currentPlayer.y+2, currentPlayer.x-2, opponent , spielerPosition,  sizeopponent, sizespielerPosition )){
+                            struct position tmp= {.x = currentPlayer.x-2, .y =currentPlayer.y+2, .status=currentPlayer.status, .color= currentPlayer.color};
+                            return strcat(strcat(postionToString(currentPlayer), ":"), recusviBlack(tmp, spielerPosition, opponent,  sizeopponent,  sizespielerPosition));
                         }  
                     }
                 }
 
-                if(currentPlayer.color == "White" && currentPlayer.x+1 == opponent[i].x){
+                if(currentPlayer.color == white && currentPlayer.x+1 == opponent[i].x){
                     if(currentPlayer.y -1 == opponent[i].y){
-                        if(isFieldFree(currentPlayer.y-2, currentPlayer.x+2, opponent , spielerPositionen )){
-                            struct Piece tmp= {.x = currentPlayer.x-2, .y =currentPlayer.y+2, .isKing=currentPlayer.isKing, .color= currentPlayer.color};
-                            return strcat(strcat(postionToString(currentPlayer), ":"), recusviBlack(tmp, spielerPositionen, opponent));
+                        if(isFieldFree(currentPlayer.y-2, currentPlayer.x+2, opponent , spielerPosition,  sizeopponent,  sizespielerPosition )){
+                            struct position tmp= {.x = currentPlayer.x-2, .y =currentPlayer.y+2, .status=currentPlayer.status, .color= currentPlayer.color};
+                            return strcat(strcat(postionToString(currentPlayer), ":"), recusviBlack(tmp, spielerPosition, opponent,  sizeopponent, sizespielerPosition));
                         }
                     }
                     if(currentPlayer.y +1 == opponent[i].y){
-                        if(isFieldFree(currentPlayer.y+2, currentPlayer.x+2, opponent , spielerPositionen )){
-                            return true; // replace see open
+                        if(isFieldFree(currentPlayer.y+2, currentPlayer.x+2, opponent , spielerPosition,  sizeopponent,  sizespielerPosition)){
+                            struct position tmp= {.x = currentPlayer.x-2, .y =currentPlayer.y-2, .status=currentPlayer.status, .color= currentPlayer.color};
+                            return strcat(strcat(postionToString(currentPlayer), ":"), recusviBlack(tmp, spielerPosition, opponent,  sizeopponent, sizespielerPosition));
                         }  
                     }
                 }  
@@ -479,7 +489,7 @@ int* recusviBlack(struct Piece currentPlayer, struct Piece* spielerPositionen, s
 
 
 
-       /* if ((currentPlayer.Color == "Black" && currentPlayer.x - 1 == opponent[i].x ) || ( currentPlayer.Color == "White" && currentPlayer.x + 1 == opponent.x)) {
+       /* if ((currentPlayer.color == black && currentPlayer.x - 1 == opponent[i].x ) || ( currentPlayer.color == white && currentPlayer.x + 1 == opponent.x)) {
             
             if (currentPlayer.y - 1 == opponent.y || currentPlayer.y + 1 == opponent.y) {
                 return true;
@@ -491,8 +501,8 @@ int* recusviBlack(struct Piece currentPlayer, struct Piece* spielerPositionen, s
 
 /*#include <stdbool.h>
 
-// Piece des Spielsteins
-struct Piece {
+// position des Spielsteins
+struct position {
     int x;
     int y;
 };
@@ -505,7 +515,7 @@ int** spielfeld;
 int* LEERES_FELD;
 
 // Methode zur Überprüfung, ob ein Stein einen anderen schlagen kann
-bool canStoneCapture(struct Piece currentPlayer, struct Piece opponent, int playerColor) {
+bool canStoneCapture(struct position currentPlayer, struct position opponent, int playercolor) {
     // Hier wird geprüft, ob das Zielfeld sich auf dem Spielbrett befindet
     if (opponent.x < 0 || opponent.x >= BOARD_SIZE || opponent.y < 0 || opponent.y >= BOARD_SIZE) {
         return false;
@@ -514,7 +524,7 @@ bool canStoneCapture(struct Piece currentPlayer, struct Piece opponent, int play
     // Überprüfe, ob das Zielfeld leer ist
     if (spielfeld[opponent.x][opponent.y] == *LEERES_FELD) {
         // Überprüfe, ob der Stein diagonal neben dem Gegner liegt, je nach Spielerfarbe
-        if ((playerColor == 'X' && currentPlayer.x - 1 == opponent.x) || (playerColor == 'O' && currentPlayer.x + 1 == opponent.x)) {
+        if ((playercolor == 'X' && currentPlayer.x - 1 == opponent.x) || (playercolor == 'O' && currentPlayer.x + 1 == opponent.x)) {
             // Überprüfe, ob das Zielfeld diagonal hcharer dem Gegner liegt
             if (currentPlayer.y - 1 == opponent.y || currentPlayer.y + 1 == opponent.y) {
                 return true;
@@ -526,9 +536,9 @@ bool canStoneCapture(struct Piece currentPlayer, struct Piece opponent, int play
 }
 
 // Methode, die für einen gegebenen Spieler überprüft, ob einer seiner Steine einen Gegner schlagen kann
-bool canAnyStoneCapture(struct Piece spielerPositionen[], int spielerAnzahl, struct Piece gegnerPosition, int playerColor) {
+bool canAnyStoneCapture(struct position spielerPosition[], int spielerAnzahl, struct position gegnerPosition, int playercolor) {
     for (int i = 0; i < spielerAnzahl; ++i) {
-        if (canStoneCapture(spielerPositionen[i], gegnerPosition, playerColor)) {
+        if (canStoneCapture(spielerPosition[i], gegnerPosition, playercolor)) {
             return true;
         }
     }
