@@ -129,12 +129,13 @@ void signalHandler(){
             
         }
 
-        //call rihannas functions with numberofownstones and numberofopponentstones parameters
+        //call rihannas functions with the required parameters
         
-        //move(canAnyStoneCapture(own, opponent),own, opponent);
+        move(canAnyStoneCapture(own, opponent),own, opponent);
 
         free(own);
         free(opponent);
+        printf("signalHandler.c ran successfully.\n");
             
         }
 
