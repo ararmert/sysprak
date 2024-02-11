@@ -25,7 +25,7 @@
 #include "move_wait_over.h"
 #include "board.h"
 // #include "sendingMoveFromPipe.h"
-// #include "signalHandler.h"
+#include "signalHandler.h"
 
 
 #define BUFFER 256
@@ -193,7 +193,7 @@ int main(int argc, char* argv[]){
         close(pipe_fds[0]);
 
         // 设置信号处理函数
-        //signal(SIGUSR1, signalHandler);
+        signal(SIGUSR1, signalHandler);
         // 启动 start 函数
        // start(pid, pipe_fds, shm_id, SHMSpielstand);
 
