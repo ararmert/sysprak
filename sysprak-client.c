@@ -190,16 +190,13 @@ int main(int argc, char* argv[]){
         //wait for childprocess
         close(pipe_fds[0]);
 
+
         // 设置信号处理函数
         signal(SIGUSR1, signalHandler);
-        // 启动 start 函数
-       // start(pid, pipe_fds, shm_id, SHMSpielstand);
-
-
+        
         //TO-DO
 
         pid = waitpid(pid, NULL, 0);
-
 
         if (pid < 0) {
         perror ("Fehler beim Warten auf Kindprozess");

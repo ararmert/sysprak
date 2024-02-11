@@ -142,7 +142,7 @@ while(1){
         printPieces(pieces, 24); // 检查棋子信息
 
         // 发送信号给 Thinker 进程
-        printf("About to send SIGUSR1 signal to parent.\n");
+        printf("start send SIGUSR1 signal to parent.\n");
         kill(getppid(), SIGUSR1);
         printf("SIGUSR1 signal sent to parent.\n");
         printf("Start use sending Move From Pipe\n");
