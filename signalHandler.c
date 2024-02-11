@@ -38,6 +38,8 @@ case 'G':
 int result = 7;
 break;
 case 'H':
+int result = 8;
+break;
 return result;
 }
 }
