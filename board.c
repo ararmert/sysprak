@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 // 定义棋盘上棋子的处理函数
-void savePiecesInSHM(struct Piece *pieces, char spielstand[8][8]) {
+void CatchPieces(struct Piece *pieces, char spielstand[8][8]) {
     int index = 0;
     for (int y = 0; y < 8; y++) {
         for (int x = 0; x < 8; x++) {
@@ -12,6 +12,7 @@ void savePiecesInSHM(struct Piece *pieces, char spielstand[8][8]) {
                     pieces[index].status = SOLDIER;
                     pieces[index].x = 'A' + x;
                     pieces[index].y = y + 1;
+                    pieces[index].exist = true;
                     index++;
                     break;
 
@@ -20,6 +21,7 @@ void savePiecesInSHM(struct Piece *pieces, char spielstand[8][8]) {
                     pieces[index].status = QUEEN;
                     pieces[index].x = 'A' + x;
                     pieces[index].y = y + 1;
+                    pieces[index].exist = true;
                     index++;
                     break;
 
@@ -28,6 +30,7 @@ void savePiecesInSHM(struct Piece *pieces, char spielstand[8][8]) {
                     pieces[index].status = SOLDIER;
                     pieces[index].x = 'A' + x;
                     pieces[index].y = y + 1;
+                    pieces[index].exist = true;
                     index++;
                     break;
 
@@ -36,6 +39,7 @@ void savePiecesInSHM(struct Piece *pieces, char spielstand[8][8]) {
                     pieces[index].status = QUEEN;
                     pieces[index].x = 'A' + x;
                     pieces[index].y = y + 1;
+                    pieces[index].exist = true;
                     index++;
                     break;
             }
@@ -62,11 +66,13 @@ printf("   A B C D E F G H\n");
 void printPieces(struct Piece *pieces, int count) {
     printf("Information for all the Pieces: \n");
     for (int i = 0; i < count; i++) {
-        printf("Piece %d: Color = %s, Status = %s, Position = %c%d\n",
+        printf("Piece %d: Color = %s, Status = %s, Position = %c%d, Existence = %s\n",
                i,
                pieces[i].color == black ? "Black" : "White",
                pieces[i].status == SOLDIER ? "Soldier" : "Queen",
                pieces[i].x,
-               pieces[i].y);
+               pieces[i].y,
+               pieces[i].exist ? "True" : "False");
+
     }
 }
