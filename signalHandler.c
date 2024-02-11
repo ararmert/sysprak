@@ -132,7 +132,7 @@ void signalHandler(){
          
         //call rihannas functions with the required parameters
         
-        move(canAnyStoneCapture(own, opponent),own, opponent);
+        move(canAnyStoneCapture(own, opponent, sizeof(opponent), sizeof(own)),own, opponent, sizeof(opponent), sizeof(own));
 
         free(own);
         free(opponent);
