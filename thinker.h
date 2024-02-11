@@ -6,8 +6,8 @@ struct position {
     enum Status status;
 };
 //void think(int pipe_write_fd);
-char* move(struct position currentPlayer, struct position* spielerPositionen, struct position* opponent);
-struct position canAnyStoneCapture(struct position* spielerPositionen, struct position* gegnerPosition);
+char* move(struct position currentPlayer, struct position* spielerPosition, struct position* opponent, int sizeopponent, int sizespielerPosition);
+struct position canAnyStoneCapture(struct position* spielerPosition, struct position* opponnent, int sizeopponent, int sizespielerPosition);
 
 /*enum Color{
     black, 
