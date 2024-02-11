@@ -151,7 +151,7 @@ bool canStoneCapture(struct position currentPlayer, struct position* opponent, s
 int obenRechtsHelper(struct position currentPlayer, struct position* opponent, struct position* spielerPosition, int sizeopponent, int sizespielerPosition){
    // int size = sizeof(opponent)/ sizeof(struct position);
     for(int i=0; i< sizeopponent; i++){
-        if(currentPlayer.y+ i >= BOARD_SIZE || currentPlayer.x+ i >= BOARD_SIZE){
+        if(currentPlayer.y-i >0 || currentPlayer.x+ i >= BOARD_SIZE){
             break;
         } 
         if(currentPlayer.y+ i == opponent[i].y && currentPlayer.x+ i == opponent[i].x){
@@ -169,7 +169,7 @@ int obenRechtsHelper(struct position currentPlayer, struct position* opponent, s
 int obenLinksHelper(struct position currentPlayer, struct position* opponent, struct position* spielerPosition, int sizeopponent, int sizespielerPosition){
    // int size = sizeof(opponent)/ sizeof(struct position);
     for(int i=0; i< sizeopponent; i++){
-        if(currentPlayer.y+ i >= BOARD_SIZE || currentPlayer.x+ i >= BOARD_SIZE){
+        if(currentPlayer.y-i >0 || currentPlayer.x+ i >= BOARD_SIZE){
             break;
         } 
         if(currentPlayer.y- i == opponent[i].y && currentPlayer.x+ i == opponent[i].x){
@@ -188,7 +188,7 @@ int obenLinksHelper(struct position currentPlayer, struct position* opponent, st
 int untenRechtsHelper(struct position currentPlayer, struct position* opponent, struct position* spielerPosition, int sizeopponent, int sizespielerPosition){
     //int size = sizeof(opponent)/ sizeof(struct position);
     for(int i=0; i< sizeopponent; i++){
-        if(currentPlayer.y+ i >= BOARD_SIZE || currentPlayer.x+ i >= BOARD_SIZE){
+        if(currentPlayer.y-i <0 || currentPlayer.x+ i >= BOARD_SIZE){
             break;
         } 
         if(currentPlayer.y+ i == opponent[i].y && currentPlayer.x- i == opponent[i].x){
@@ -208,7 +208,7 @@ int untenLinkssHelper(struct position currentPlayer, struct position* opponent, 
     //int size = sizeof(opponent)/ sizeof(struct position);
      
     for(int i=0; i< sizeopponent; i++){
-        if(currentPlayer.y+ i >= BOARD_SIZE || currentPlayer.x+ i >= BOARD_SIZE){
+        if(currentPlayer.y-i <0 || currentPlayer.x+ i >= BOARD_SIZE){
             break;
         }  
         if(currentPlayer.y- i == opponent[i].y && currentPlayer.x- i == opponent[i].x){
@@ -288,7 +288,7 @@ bool canKingCapture(struct position currentPlayer, struct position* opponent, st
   struct position canAnyStoneCapture(struct position* spielerPosition, struct position* opponnent, int sizeopponent, int sizespielerPosition) {
     //int eigeneSteine = sizeof(spielerPosition)/ sizeof(struct position);
     for (int i = 0; i < sizespielerPosition; ++i) {
-        if (spielerPosition[i].status && canKingCapture(spielerPosition[i], opponnent, spielerPosition, sizeopponent, sizespielerPosition )){
+        if (spielerPosition[i].status == QUEEN && canKingCapture(spielerPosition[i], opponnent, spielerPosition, sizeopponent, sizespielerPosition )){
             return spielerPosition[i];
             
         }
@@ -363,22 +363,22 @@ char* move(struct position currentPlayer, struct position* spielerPosition, stru
             }else{
                 if(isFieldFree(currentPlayer.y+1, currentPlayer.x+1, opponent , spielerPosition, sizeopponent,  sizespielerPosition )){
                     struct position tmp= {.x = currentPlayer.x+1, .y =currentPlayer.y+1, .status=currentPlayer.status, .color= currentPlayer.color};
-                        return strcat(positionToString(currentPlayer), positionToString(tmp));
+                        return strcat(strcat(postionToString(currentPlayer),":"), positionToString(tmp));
                 }
 
                 if(isFieldFree(currentPlayer.y-1, currentPlayer.x+1, opponent , spielerPosition, sizeopponent,  sizespielerPosition )){
                     struct position tmp= {.x = currentPlayer.x+1, .y =currentPlayer.y-1, .status=currentPlayer.status, .color= currentPlayer.color};
-                        return strcat(positionToString(currentPlayer), positionToString(tmp));
+                        return strcat(strcat(postionToString(currentPlayer),":"), positionToString(tmp));
                 }
 
                 if(isFieldFree(currentPlayer.y+1, currentPlayer.x-1, opponent , spielerPosition , sizeopponent,  sizespielerPosition)){
                     struct position tmp= {.x = currentPlayer.x-1, .y =currentPlayer.y+1, .status=currentPlayer.status, .color= currentPlayer.color};
-                        return strcat(positionToString(currentPlayer), positionToString(tmp));
+                        return strcat(strcat(postionToString(currentPlayer),":"), positionToString(tmp));
                 }
 
                 if(isFieldFree(currentPlayer.y-1, currentPlayer.x-1, opponent , spielerPosition , sizeopponent,  sizespielerPosition)){
                     struct position tmp= {.x = currentPlayer.x-1, .y =currentPlayer.y-1, .status=currentPlayer.status, .color= currentPlayer.color};
-                        return strcat(positionToString(currentPlayer), positionToString(tmp));
+                         return strcat(strcat(postionToString(currentPlayer),":"), positionToString(tmp));
                 }
 
                 // selbe 4 für Richtungen
